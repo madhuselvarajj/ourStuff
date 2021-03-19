@@ -1,0 +1,73 @@
+Front-End:
+	-> 
+	-> 
+
+Create an account:
+	'POST' email, password, fname, lname, dob, street_address, city, province, postal_code
+	phone number
+
+Log in: (if no result, invalid)
+	'GET' * FROM email, password (check ADMIN & USER)
+
+View all items:
+	'GET' * FROM item
+
+View items in city:
+	'GET' * FROM item WHERE city = USER.City
+
+View items by category:
+	'GET' * FROM item WHERE city = USER.City & Category = selectedCategory
+
+View items sorted by price:
+	'GET' * FROM item WHERE ... ORDER BY item.price
+
+Request item for rent:
+	'POST' INSERT TRANSACTION VALUE(...)
+	GET info about item... (specify Start_date, Duration, Pickup, Drop-off)
+	Check black out times for ITEM also
+		Type = 'Pending'
+		Rating = NULL
+		Review = NULL
+
+View all renter transactions:
+	'GET' * FROM Transactions WHERE renter_email = logged in user
+
+View active renter transactions:
+	'GET' * FROM Transactions WHERE renter_email = logged in user & Ongoing (aka todays date is after start date and duration)
+
+Complete transaction:
+	'PUT' Transaction.type -> 'Complete'
+
+Review transaction:
+	'PUT' Rating, Review into Transaction
+
+View all owner transactions:
+	'GET' * FROM Transactions WHERE owner_email = logged in user
+
+View pending transactions:
+	'GET' * FROM Transactions WHERE = user_email = logged in user & type = 'Pending'
+
+Owner approves request:
+	'PUT' Transaction.Type = 'Booked'	
+
+Owner rejects request:
+	'DELETE' Transaction
+
+Owner black out item:
+	'POST' ITEM_BLACKOUT
+
+Owner delete item:
+	'DELETE' ITEM
+
+User reporting?
+
+Add new category?
+
+
+
+
+
+
+
+
+
