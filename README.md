@@ -42,10 +42,10 @@ python3 scripts/resetDB.py
 
 <details>
 <summary>Diagrams</summary>
-![Extended Entity Relationship Diagram](https://github.com/stephanedorotich/ourStuff/blob/main/resources/EERD.jpg)
+![Extended Entity Relationship Diagram](https://raw.githubusercontent.com/stephanedorotich/ourStuff/main/resources/EERD.jpg)
   
 
-![Relational Model](Relationship Diagram](https://github.com/stephanedorotich/ourStuff/blob/main/resources/RM.jpg)
+![Relational Model](Relationship Diagram](https://raw.githubusercontent.com/stephanedorotich/ourStuff/main/resources/RM.jpg)
 </details>
 
 ## Resources
