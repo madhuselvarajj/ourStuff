@@ -2,7 +2,7 @@
 import createDB, populateDB
 import os
 
-def clean():
+def reset():
 	if os.path.exists("ourStuff.db"):
 		print("Cleaning...")
 		os.remove("ourStuff.db")
@@ -12,4 +12,4 @@ def clean():
 	populateDB.populate()
 
 if __name__ == '__main__':
-	clean()
+	reset()
