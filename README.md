@@ -6,12 +6,6 @@ The following resources must be installed locally.
 * python3
 * flask (python3 library)
 
-## Resources
-The resources folder contains files related to our design
-
-## Scripts
-The scripts folder contains files for default actions on the database
-
 <details>
 <summary>Set-Up Instructions for Windows</summary>
 Open the Command Prompt. (by pressing the Windows Key and typing 'cmd')
@@ -51,3 +45,9 @@ python3 scripts/resetDB.py
 
 ![Relational Model](Relationship Diagram](https://github.com/stephanedorotich/ourStuff/tree/master/resources/RM.jpg)
 </details>
+
+## Resources
+The resources folder contains files related to our design
+
+## Scripts
+The scripts folder contains files for default actions on the database
