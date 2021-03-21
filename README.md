@@ -31,6 +31,7 @@ You're all set!
 
 <details>
 <summary>Resetting the Database</summary>
+
 A few python scripts are included to help reset the database.
 
 Using the command line, navigate to the project folder. You can now reset the database to its default state with the following command:
@@ -41,9 +42,10 @@ python3 scripts/resetDB.py
 
 <details>
 <summary>Diagrams</summary>
-![Extended Entity Relationship Diagram](https://github.com/stephanedorotich/ourStuff/tree/master/resources/EERD.jpg)
+![Extended Entity Relationship Diagram](https://github.com/stephanedorotich/ourStuff/blob/main/resources/EERD.jpg)
+  
 
-![Relational Model](Relationship Diagram](https://github.com/stephanedorotich/ourStuff/tree/master/resources/RM.jpg)
+![Relational Model](Relationship Diagram](https://github.com/stephanedorotich/ourStuff/blob/main/resources/RM.jpg)
 </details>
 
 ## Resources
