@@ -1,5 +1,5 @@
 import sqlite3, flask
-from flask import jsonify, render_template, redirect, url_for
+from flask import jsonify, render_template, redirect, url_for, request
 # redirect and url_for can be used to call different routes, ex: redirect(url_for('function_name'))
 
 # create the app
@@ -19,11 +19,29 @@ def home():
 # register for account
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    if request.method == "POST" :
+        #get all of the info to load into the database into variables for now
+        #could do differently later on
+        firstname = request.form["fname"]
+        lname = request.form["lname"]
+        password = request.form["pass"]
+        email = request.form["email"]
+        dob = request.form["DOB"]
+        str = request.form["street"]
+        city = request.form["city"]
+        prov = request.form["province"]
+        postal = request.form["postal"]
+        return render_template()
+    
+    
+    else :
+        return render_template('register.html')
     # if GET, return a html form for user to sign up
     # if POST, save user information in DB and return a redirect to login\home page
 
     # POST if user presses submit, before they press submit its a GET request
-    return render_template() # remove later
+
+
 
 
 # login
@@ -33,8 +51,15 @@ def login():
     # if POST, check if entered information is valid/is in the DB
         # if yes, redirect to profile page?
         # if no, display error message but don't redirect or return anything, user stays on login page
-
-    return render_template() # temporary
+        if request.method == 'GET' :
+            render_template() #render the template of the login HTML page
+        else : #if it's POST
+            email = request.form["email"]
+            password = request.form["password"]
+                #check if valid or not
+                #if valid, error message. Else, redirect to home page
+            return render_template()
+    
 
 # view all items
 @app.route('/browse/all', methods=['GET'])
@@ -60,8 +85,12 @@ def filter_item():
 def rent_item():
     # if GET, return a html form for user to enter their transaction + rental information
     # if POST, create a transaction entry in DB using user information -> then redirect back to home page?
-    return render_template()
-
+    if request.method == "GET" :
+        return render_template() #render the template of the rental screen
+    else :
+        startRentalDate = request.form["start"]
+        endRentalDate = request.form["end"]
+        return render_template() #render the home page again or a confirmation page
 
 # view profile (where user can view their transactions and items)
 @app.route('/user/<username>', methods=['GET'])
@@ -82,7 +111,11 @@ def rentals(username):
 def active_rentals(username):
     # if GET, find only active rentals and display them
     # if PUT, change status of selected transaction to complete -> redirect to review page
-    return render_template()
+    if request.method == "GET" :
+        return render_template()
+    else :
+        return render_template(); #first change status of the transaction
+
 
 # view all owner transactions
 @app.route('/user/<username>/owner/transactions/all', methods = ['GET'])
@@ -94,12 +127,27 @@ def transactions(username):
 def pending_transactions(username):
     # if GET, find only pending transactions and display them
     # if PUT, change status of selected transaction, then reload page?
-    return render_template()
+    if request.method == "GET" :
+        return render_template()
+    else :
+        return render_template()
+
 
 # view all owner's items, can choose to black out dates or delete
 @app.route('/user/<username>/owner/items/all', methods = ['GET', 'POST', 'DELETE'])
 def owner_items(username):
     return render_template()
+    if request.method == "GET" :
+        return render_template()
+    elif request.method == "POST":
+        start_black_out = request.form["start"]
+        end_black_out = request.form["end"] #now just update blackout dates in the backend
+        return render_template()
+    else :
+        return render_template() #deletion
+
+
+
 
 # still need: writing reivews, reporting, adding new categories, and admin functionality
 
@@ -111,3 +159,4 @@ def sampleQuery1():
     return jsonify(users)
 
 app.run()
+
