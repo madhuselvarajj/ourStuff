@@ -4,7 +4,6 @@ from flask import jsonify, render_template, redirect, url_for, request
 
 # create the app
 app = flask.Flask(__name__)
-# idk what this does
 app.config["DEBUG"] = True
 
 
@@ -31,17 +30,15 @@ def register():
         city = request.form["city"]
         prov = request.form["province"]
         postal = request.form["postal"]
-        return render_template()
-    
-    
+        return redirect(url_for('home'))
+
+
     else :
         return render_template('register.html')
     # if GET, return a html form for user to sign up
     # if POST, save user information in DB and return a redirect to login\home page
 
     # POST if user presses submit, before they press submit its a GET request
-
-
 
 
 # login
@@ -59,12 +56,12 @@ def login():
                 #check if valid or not
                 #if valid, error message. Else, redirect to home page
             return render_template()
-    
+
 
 # view all items
 @app.route('/browse/all', methods=['GET'])
 def view_all():
-    # Load all items from DB, then pass to browse.html file to display?
+    # Load all items from DB, then pass to browse.html file to display
     return render_template() #temporary
 
 # filter item by city, category, price
@@ -84,7 +81,7 @@ def filter_item():
 @app.route('/browse/item/rent', methods=['GET', 'POST'])
 def rent_item():
     # if GET, return a html form for user to enter their transaction + rental information
-    # if POST, create a transaction entry in DB using user information -> then redirect back to home page?
+    # if POST, create a transaction entry in DB using user information -> then redirect back to home page
     if request.method == "GET" :
         return render_template() #render the template of the rental screen
     else :
@@ -126,7 +123,7 @@ def transactions(username):
 @app.route('/user/<username>/owner/transactions/pending', methods = ['GET', 'PUT'])
 def pending_transactions(username):
     # if GET, find only pending transactions and display them
-    # if PUT, change status of selected transaction, then reload page?
+    # if PUT, change status of selected transaction, then reload page
     if request.method == "GET" :
         return render_template()
     else :
@@ -147,10 +144,6 @@ def owner_items(username):
         return render_template() #deletion
 
 
-
-
-# still need: writing reivews, reporting, adding new categories, and admin functionality
-
 @app.route('/users',methods=['GET'])
 def sampleQuery1():
     con = sqlite3.connect('ourStuff.db')
@@ -159,4 +152,3 @@ def sampleQuery1():
     return jsonify(users)
 
 app.run()
-
