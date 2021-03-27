@@ -1,10 +1,12 @@
 import sqlite3, flask
-from flask import jsonify, render_template, redirect, url_for, request
+from flask import jsonify, render_template, redirect, url_for, request, flash
+from forms import LoginForm
 # redirect and url_for can be used to call different routes, ex: redirect(url_for('function_name'))
 
 # create the app
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
+app.config['SECRET_KEY'] = 'a722544382860619226245081983ab8f' #needed to use flask_wtforms
 
 
 # home page
@@ -40,23 +42,22 @@ def register():
 
     # POST if user presses submit, before they press submit its a GET request
 
-
-# login
+#login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # if GET, return a html form for user to log in
-    # if POST, check if entered information is valid/is in the DB
-        # if yes, redirect to profile page?
-        # if no, display error message but don't redirect or return anything, user stays on login page
-        if request.method == 'GET' :
-            render_template() #render the template of the login HTML page
-        else : #if it's POST
-            email = request.form["email"]
-            password = request.form["password"]
-                #check if valid or not
-                #if valid, error message. Else, redirect to home page
-            return render_template()
+    form = LoginForm()
+    if form.validate_on_submit():
+        #look for user in db with matching email + password
+        con = sqlite3.connect('ourStuff.db')
+        cur = con.cursor()
+        user = cur.execute('SELECT * FROM USER WHERE Email=? AND Password=?', (form.email.data, form.password.data,)).fetchone()
 
+        #if login successful redirect to home page....else stay on login page
+        if user:
+            return redirect(url_for('home'))
+        else:
+            flash('Incorrect username or password. Please try again.', 'error')
+    return render_template('login.html', form=form)
 
 # view all items
 @app.route('/browse/all', methods=['GET'])
