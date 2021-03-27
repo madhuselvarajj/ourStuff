@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!--just temporary for testing login route-->
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Our Stuff</title>
+  </head>
+  <body>
+    <h1>Login</h1>
+
+    <!--displays the flash messages-->
+    <div class="col-md-8">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+          {% block content %}{% endblock %}
+    </div>
+
+    <form method="POST" action="">
+      {{ form.hidden_tag() }} <!--don't forget this-->
+
+      {{ form.email.label() }}
+      {{ form.email() }}
+      <br />
+  		<br />
+      {{ form.password.label() }}
+      {{ form.password() }}
+      <br />
+  		<br />
+      {{ form.submit() }}
+    </form>
+  </body>
+</html>
