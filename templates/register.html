@@ -1,53 +1,72 @@
 <!DOCTYPE html>
-<html lang = "en">
-<head>
-	<title> register for an account page:</title>
-</head>
-<h1> Enter your information to register for an account below: </h1>
-<body>
-	<form method = "post">
-First Name
-		<input type ="text" name="fname"/>
-		<br />
-		<br />
-Last Name 
-		<input type ="text" name="lname"/>
-		<br />
-		<br />
-Password
-		<input type = "password" name="pass" />
-		<br />
-		<br />
-Email
-		<input type ="text" name="email" />
-		<br />
-		<br />
-Birthday
-		<input type = "date" name="DOB" />
-		<br />
-		<br />
-Street Address
-		<input type ="text" name="street" />
-		<br />
-		<br />
-City
-		<input type ="text" name="city" />
-		<br />
-		<br />
-Province
-		<input type ="text" name="province" />
-		<br />
-		<br />
-Postal Code
-		<input type ="text" name="postal" />
-		<br />
-		<br />
+<!--just temporary for testing register route-->
+<!-- note i pretty much copied what we had in html for the login route-->
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Our Stuff</title>
+  </head>
+  <body>
+    <h1>Register for an account</h1>
 
-<button style="background-colour:green;" type ="button">
-Register
-</button> 
-	</form>
-</body>
+    <!--displays the flash messages-->
+    <div class="col-md-8">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+          {% block content %}{% endblock %}
+    </div>
+
+    <form method="POST" action="">
+      {{ form.hidden_tag() }} <!--don't forget this-->
+
+      {{ form.email.label() }}
+      {{ form.email() }}
+      <br />
+  		<br />
+      {{ form.password.label() }}
+      {{ form.password() }}
+      <br />
+  		<br />
+	  {{ form.fname.label() }}
+	  {{form.fname() }}
+	  <br />
+	  	<br />
+	  {{ form.lname.label() }}
+	  {{form.lname() }}
+	  <br />
+	  <br />
+	  {{form.dob.label() }}
+	  {{form.dob() }}
+	  <br />
+	  <br />
+	  {{form.street.label() }}
+	  {{form.street() }}
+	  <br />
+	  <br />
+	  {{form.city.label() }}
+	  {{form.city() }}
+	  <br />
+	  <br />
+	  {{form.province.label() }}
+	  {{form.province() }}
+	  <br />
+	  <br />
+	  {{form.postalCode.label() }}
+	  {{form.postalCode() }}
+	  <br />
+	  <br />
+	  
+	  {{ form.submit() }}
+    </form>
+  </body>
+</html>
 
 	
 	
