@@ -1,6 +1,7 @@
 import sqlite3, flask
 from flask import jsonify, render_template, redirect, url_for, request, flash
 from forms import LoginForm
+from forms import registerForm
 # redirect and url_for can be used to call different routes, ex: redirect(url_for('function_name'))
 
 # create the app
@@ -20,28 +21,24 @@ def home():
 # register for account
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == "POST" :
-        #get all of the info to load into the database into variables for now
-        #could do differently later on
-        firstname = request.form["fname"]
-        lname = request.form["lname"]
-        password = request.form["pass"]
-        email = request.form["email"]
-        dob = request.form["DOB"]
-        str = request.form["street"]
-        city = request.form["city"]
-        prov = request.form["province"]
-        postal = request.form["postal"]
-        return redirect(url_for('home'))
+    form = registerForm()
+    if form.validate_on_submit():
+        con = sqlite3.connect('ourStuff.db')
+        cur = con.cursor()
+        registration = cur.execute('INSERT INTO USER (Email, Password, First_name, Last_name, DoB,Street_address ,City,Province, Postal_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', (form.email.data, form.password.data, form.fname.data, form.lname.data, form.dob.data, form.street.data, form.city.data, form.province.data, form.postalCode.data))
 
+        if registration:
+            return redirect(url_for('login'))
+        else:
+            flash('Please enter the appropriate information in the fields.', 'error')
+    else:
+        return render_template('register.html', form=form)
 
-    else :
-        return render_template('register.html')
     # if GET, return a html form for user to sign up
-    # if POST, save user information in DB and return a redirect to login\home page
+    # if POST, save user information in DB and return a redirect to login
 
     # POST if user presses submit, before they press submit its a GET request
-
+    
 #login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
