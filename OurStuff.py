@@ -31,7 +31,7 @@ def register():
         if registration:
             return redirect(url_for('login'))
         else:
-            flash('Please enter the appropriate information in the fields.', 'error')
+            flash('Please enter the appropriate information in the fields. Make sure Date of Birth is in the form yyyy-mm-dd.', 'error')
     else:
         return render_template('register.html', form=form)
 
