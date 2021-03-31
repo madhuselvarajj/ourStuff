@@ -26,7 +26,8 @@ def register():
         con = sqlite3.connect('ourStuff.db')
         cur = con.cursor()
         registration = cur.execute('INSERT INTO USER (Email, Password, First_name, Last_name, DoB,Street_address ,City,Province, Postal_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', (form.email.data, form.password.data, form.fname.data, form.lname.data, form.dob.data, form.street.data, form.city.data, form.province.data, form.postalCode.data))
-
+        con.commit()
+        cur.close()
         if registration:
             return redirect(url_for('login'))
         else:
