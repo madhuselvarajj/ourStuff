@@ -1,34 +1,28 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Our Stuff</title>
-  </head>
-  <body>
-    <h1>Browse All Items</h1>
-    
-	<br>
-	<br>
+{% extends "base.html" %}
+{% block content %}
+  <h1>Browse All Items</h1>
 
-	<ul>
-        {% for row in data %}
-        <tr>
-		<b>name:</b>
- 		<td><a>{{row[0]}}</a></td>
-		<br>
-		<b>category:</b>
-	  	<td>{{row[1]}}</td>
-		<br>
-		<b>description:</b>
-		<td>{{row[3]}}</td>
-		<br>
-		<b>daily rate:</b>
-		<td>{{row[4]}}</td>
-		<br>
-		<br>
-		<br>
-       	</tr>
-        {% endfor %}
-	</ul>
-    </body>
-</html>
+  <br>
+  <br>
+
+  <ul>
+      {% for row in data %}
+      <tr>
+  <b>name:</b>
+  <td><a>{{row[0]}}</a></td>
+  <br>
+  <b>category:</b>
+    <td>{{row[1]}}</td>
+  <br>
+  <b>description:</b>
+  <td>{{row[3]}}</td>
+  <br>
+  <b>daily rate:</b>
+  <td>{{row[4]}}</td>
+  <br>
+  <br>
+  <br>
+      </tr>
+      {% endfor %}
+  </ul>
+{% endblock content%}

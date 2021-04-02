@@ -39,7 +39,7 @@ def register():
     # if POST, save user information in DB and return a redirect to login
 
     # POST if user presses submit, before they press submit its a GET request
-    
+
 #login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
