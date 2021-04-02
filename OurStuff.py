@@ -61,7 +61,11 @@ def login():
 @app.route('/browse/all', methods=['GET'])
 def view_all():
     # Load all items from DB, then pass to browse.html file to display
-    return render_template() #temporary
+    con = sqlite3.connect('ourStuff.db')
+    cur = con.cursor()
+    cur.execute("SELECT * FROM ITEM")
+    data = cur.fetchall() #an array of all items fetched from DB
+    return render_template('browse.html', data=data) #show the data in the html
 
 # filter item by city, category, price
 # ex:  http://127.0.0.1:5000/browse/item?city=Calgary
