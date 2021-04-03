@@ -1,16 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
-  <form method="POST" action="">
-    {{ form.hidden_tag() }} <!--don't forget this-->
-
-    {{ form.email.label() }}
-    {{ form.email() }}
-    <br />
-    <br />
-    {{ form.password.label() }}
-    {{ form.password() }}
-    <br />
-    <br />
-    {{ form.submit() }}
-  </form>
+        <div class="row">
+            <div class="col-sm">
+            </div>
+            <div class="col-sm">
+              <h1>Account Login</h1>
+              <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                  {{ form.email.label(class="form-control-label") }}
+                  {{ form.email(class="form-control form-control-md", placeholder="Enter Email") }}
+                </div>
+                <div class="form-group">
+                  {{ form.password.label(class="form-control-label") }}
+                  {{ form.password(class="form-control form-control-md", placeholder="Enter Password") }}
+                </div>
+                <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+                </div>
+              </form>
+            </div>
+            <div class="col-sm">
+            </div>
+        </div>
 {% endblock content%}

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<!--base HTML that every other webpage will extend-->
+<!--base HTML that every other webpage extends-->
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'main.css') }}"> <!--custom CSS-->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'custom.css') }}">
 
     <title>Our Stuff</title>
   </head>
@@ -33,7 +33,7 @@
               <a class="nav-link" href="{{url_for('login')}}">Login</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{url_for('register')}}">Register</a>
+              <a class="nav-link" href="{{url_for('register')}}">Sign Up</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#">Profile</a>
@@ -55,11 +55,10 @@
               {% endfor %}
             {% endif %}
           {% endwith %}
-
-          <!--content block that is custom for every webpage-->
-          {% block content %}{% endblock %}
         </div>
       </div>
+      <!--content block custom for every webpage-->
+      {% block content %}{% endblock %}
     </main>
 
     <!-- Optional JavaScript -->
