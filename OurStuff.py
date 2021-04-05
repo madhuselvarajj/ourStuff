@@ -149,7 +149,7 @@ def owner_items(username):
 
 @app.route('/users',methods=['GET'])
 def sampleQuery1():
-    con = sqlite3.connect('ourStuff.db')
+    con = sqlite3.connect('OurStuff.db')
     cur = con.cursor()
     users = cur.execute('SELECT * FROM USER;').fetchall()
     return jsonify(users)

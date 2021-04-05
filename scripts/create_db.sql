@@ -6,7 +6,7 @@ USER:
     NAME            FORMAT          TYPE        VALIDATION?
     -------------------------------------------------------
     Email:          "*@*.*"         TEXT        yes
-    Password:       "*"             TEXT        no
+    Password:       "________%"     TEXT        yes
     First_name:     "*"             TEXT        no
     Last_name:      "*"             TEXT        no
     DoB:            "YYYY-MM-DD"    TEXT        yes
@@ -20,11 +20,11 @@ USER:
 */
 CREATE TABLE USER
 (
-    Email			TEXT		NOT NULL,
-    Password		TEXT		NOT NULL,
+    Email			TEXT		PRIMARY KEY CHECK (Email LIKE "%@%.%"),
+    Password		TEXT		NOT NULL CHECK (Password LIKE "________%"),
     First_name		TEXT		NOT NULL,
     Last_name		TEXT		NOT NULL,
-    DoB				TEXT,
+    DoB				TEXT        CHECK (DoB LIKE "####-##-##"),
     Street_address	TEXT,
     City			TEXT		NOT NULL,
     Province		TEXT,
