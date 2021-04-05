@@ -2,6 +2,7 @@ import sqlite3, flask
 from flask import jsonify, render_template, redirect, url_for, request, flash
 from forms import LoginForm, UserInfoForm
 from forms import registerForm
+from datetime import datetime
 # redirect and url_for can be used to call different routes, ex: redirect(url_for('function_name'))
 
 # create the app
@@ -89,30 +90,37 @@ def rent_item():
         return render_template() #render the home page again or a confirmation page
 
 # view profile (where user can view their transactions and items)
-@app.route('/user/<username>', methods=['GET'])
-def profile(username):
-
-    # once flask-login is setup, send current_user to html page instead....if user not logged in then redirect to login
+@app.route('/profile', methods=['GET'])
+def profile():
+    # TODO: once flask-login is setup, first check if current_user is logged in (redirect to login if not)
     con = sqlite3.connect('ourStuff.db')
     cur = con.cursor()
     user = cur.execute('SELECT * FROM USER WHERE Email=?', ('madhuselvaraj24@gmail.com',)).fetchone() #just temporary, once flask-login is setup don't need to query DB
     return render_template('profile.html', user=user)
 
-@app.route('/user/<username>/edit', methods=['GET', 'POST'])
-def editProfile(username):
+@app.route('/profile/edit', methods=['GET', 'POST'])
+def editProfile():
     form = UserInfoForm()
     con = sqlite3.connect('ourStuff.db')
     cur = con.cursor()
     user = cur.execute('SELECT * FROM USER WHERE Email=?', ('madhuselvaraj24@gmail.com',)).fetchone() #temporary until flask-login is setup
 
-    # TODO: add validators to each of the form fields, then finish populating the form with the current_user's information
+    # TODO: once flask-login is setup, change everything to current_user
     if form.validate_on_submit():
-        sql = '''UPDATE USER SET Street_address = form.street.data WHERE Email='madhuselvaraj24@gmail.com' '''
-        cur.execute(sql)
+        cur.execute('UPDATE USER SET Email=?, Password=?, First_name=?, Last_name=?, Dob=?, Owner=0, Renter=0, Street_address =?, City=?, Province=?, Postal_code=? WHERE Email=?',(form.email.data, form.password.data, form.fname.data, form.lname.data, form.dob.data, form.street.data, form.city.data, form.province.data, form.postalCode.data, 'madhuselvaraj24@gmail.com',))
+        con.commit()
         cur.close()
-        return redirect(url_for('profile', username='user[2]-user[3]'))
+        return redirect(url_for('profile'))
     elif request.method=='GET': #populates the form with the current_user's information
-        form.email.data = user[0] #later do current_user.emai
+        form.email.data = user[0] #later do current_user.email
+        form.password.data = user[1]
+        form.fname.data = user[2]
+        form.lname.data = user[3]
+        form.dob.data = datetime.strptime(user[4], '%Y-%m-%d')
+        form.street.data = user[7]
+        form.city.data = user[8]
+        form.province.data = user[9]
+        form.postalCode.data = user[10]
 
     return render_template('editProfile.html', form=form, user=user) #later user=current_user
 
