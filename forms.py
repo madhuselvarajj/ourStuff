@@ -31,3 +31,10 @@ class UserInfoForm(FlaskForm):
     province = StringField('province', validators=[DataRequired()])
     postalCode = StringField('postal code', validators=[DataRequired()])
     submit = SubmitField('Save Changes', validators=[DataRequired()])
+
+
+class filterForm(FlaskForm):
+    city = StringField('enter city to filter', default='none')
+    category = StringField('enter category to filter by', default='none')
+    maxPrice = StringField('enter maximum price to filer by', default='none')
+    submit = SubmitField('Filter')
