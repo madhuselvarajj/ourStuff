@@ -2,7 +2,10 @@ import sqlite3, flask
 from flask import jsonify, render_template, redirect, url_for, request, flash
 from forms import LoginForm
 from forms import registerForm
+from forms import filterForm
 # redirect and url_for can be used to call different routes, ex: redirect(url_for('function_name'))
+
+filer_item = "" #define the global variable used in multiple functions below
 
 # create the app
 app = flask.Flask(__name__)
@@ -31,7 +34,7 @@ def register():
         if registration:
             return redirect(url_for('login'))
         else:
-            flash('Please enter the appropriate information in the fields. Make sure Date of Birth is in the form yyyy-mm-dd.', 'danger')
+            flash('Please enter the appropriate information in the fields. Make sure Date of Birth is in the form yyyy-mm-dd.', 'error')
     else:
         return render_template('register.html', form=form)
 
@@ -39,45 +42,66 @@ def register():
     # if POST, save user information in DB and return a redirect to login
 
     # POST if user presses submit, before they press submit its a GET request
-
+    
 #login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    global loggedInUser = "" #global variables used to keep track of the user who is currently logged in.
+    global loggedInPass = ""
     form = LoginForm()
     if form.validate_on_submit():
         #look for user in db with matching email + password
         con = sqlite3.connect('ourStuff.db')
         cur = con.cursor()
         user = cur.execute('SELECT * FROM USER WHERE Email=? AND Password=?', (form.email.data, form.password.data,)).fetchone()
+        loggedInUser = form.email.data
+        loggedInPass = form.password.data
 
         #if login successful redirect to home page....else stay on login page
         if user:
             return redirect(url_for('home'))
         else:
-            flash('Incorrect username or password. Please try again.', 'danger')
+            flash('Incorrect username or password. Please try again.', 'error')
     return render_template('login.html', form=form)
 
 # view all items
-@app.route('/browse/all', methods=['GET'])
+@app.route('/browse/all', methods=['GET', 'POST'])
 def view_all():
     # Load all items from DB, then pass to browse.html file to display
+    #use the global variable filter_item
+    form = filterForm()
     con = sqlite3.connect('ourStuff.db')
     cur = con.cursor()
-    cur.execute("SELECT * FROM ITEM")
+    if form.validate_on_submit():
+        if (form.category.data != 'none' and form.city.data != 'none' and form.maxPrice.data != 'none'):
+            cur.execute("SELECT * FROM ITEM, USER WHERE USER.Email = ITEM.Owner_email AND Category_name=? AND Daily_rate<=? AND USER.City =?", (form.category.data, form.maxPrice.data, form.city.data))
+        elif (form.category.data != 'none' and form.city.data != 'none'):
+            cur.execute("SELECT * FROM ITEM, USER WHERE Category_name=? AND USER.Email = ITEM.Owner_email AND USER.City =?", (form.category.data, form.city.data))
+
+        elif (form.category.data != 'none' and form.maxPrice.data != 'none'):
+            cur.execute("SELECT * FROM ITEM WHERE Category_name=? AND Daily_rate<=?", (form.category.data, form.maxPrice.data))
+
+        elif (form.maxPrice.data != 'none' and form.city.data != 'none'):
+            cur.execute("SELECT * FROM ITEM, USER WHERE Daily_rate<=? AND USER.Email = ITEM.Owner_email AND USER.City =?", (form.maxPrice.data, form.city.data))
+
+        elif (form.category.data != 'none'):
+            cur.execute("SELECT * FROM ITEM WHERE Category_name=?", (form.category.data,))
+
+        elif (form.city.data != 'none'):
+            cur.execute("SELECT * FROM ITEM, USER WHERE USER.Email = ITEM.Owner_email AND USER.City =?", (form.city.data,))
+
+        elif (form.maxPrice.data != 'none'):
+            cur.execute("SELECT * FROM ITEM WHERE Daily_rate<=?", (form.maxPrice.data,))
+
+        else:
+            cur.execute("SELECT * FROM ITEM")
+            
+    else:
+        cur.execute("SELECT * FROM ITEM")
+    if request.method == 'GET':
+        cur.execute("SELECT * FROM ITEM")
     data = cur.fetchall() #an array of all items fetched from DB
-    return render_template('browse.html', data=data) #show the data in the html
-
-# filter item by city, category, price
-# ex:  http://127.0.0.1:5000/browse/item?city=Calgary
-# ex:  http://127.0.0.1:5000/browse/item?city=Calgary&category=sports+equipment
-@app.route('/browse/item', methods=['GET'])
-def filter_item():
-    # store all request arguments in variables
-    # query the DB based on these arguments
-    # pass data to html file to display? ex: return render_template('browse.html', items = DB_items)
-
-    return render_template() # temporary
-
+    return render_template('browse.html', data=data, form=form) #show the data in the html
 
 # user requests to rent item
 # not sure if route is correct
