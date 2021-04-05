@@ -1,34 +1,64 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Our Stuff</title>
-  </head>
-  <body>
-    <h1>Browse All Items</h1>
-    
-	<br>
-	<br>
 
-	<ul>
-        {% for row in data %}
-        <tr>
-		<b>name:</b>
- 		<td><a>{{row[0]}}</a></td>
-		<br>
-		<b>category:</b>
-	  	<td>{{row[1]}}</td>
-		<br>
-		<b>description:</b>
-		<td>{{row[3]}}</td>
-		<br>
-		<b>daily rate:</b>
-		<td>{{row[4]}}</td>
-		<br>
-		<br>
-		<br>
-       	</tr>
-        {% endfor %}
-	</ul>
-    </body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="col-sm">
+  </div>
+  <div class="col-sm">
+    <h1>Filter Search Results (enter 'none' if not applicable)</h1>
+    <form method="POST" action="">
+      {{ form.hidden_tag() }}
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label>City</label>
+          {{ form.city(class="form-control form-control-md", placeholder="City") }}
+        </div>
+        <div class="form-group col-md-6">
+          <label>Category</label>
+          {{ form.category(class="form-control form-control-md", placeholder="Category") }}
+        </div>
+        <div class="form-group col-md-6">
+          <label>Maximum Price</label>
+          {{ form.maxPrice(class="form-control form-control-md", placeholder="Maximum Price") }}
+        </div>
+      </div>
+      <div class="form-group">
+      {{ form.submit(class="btn btn-outline-info") }}
+      </div>
+    </form>
+  </div>
+  <div class="row-sm">
+    <ul>
+      <br>
+      <br>
+      <br>
+      <b>Items available for rent: </b>
+      <br>
+      <br>
+      <br>
+      {% for row in data %}
+      <tr>
+  <b>name:</b>
+  <td><a>{{row[0]}}</a></td>
+  <br>
+  <b>category:</b>
+    <td>{{row[1]}}</td>
+  <br>
+  <b>description:</b>
+  <td>{{row[3]}}</td>
+  <br>
+  <b>daily rate:</b>
+  <td>{{row[4]}}</td>
+  <br>
+  <br>
+  <br>
+      </tr>
+      {% endfor %}
+  </ul>
+</div>
+</div>
+  <br>
+  <br>
+  </div>
+</div>
+{% endblock content%}

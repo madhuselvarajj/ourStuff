@@ -4,10 +4,10 @@ from wtforms.validators import DataRequired
 
 
 class LoginForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired()]) #validators that field is not null and is valid email
+    email = StringField('Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
-   
+
 class registerForm(FlaskForm):
     lname = StringField('last name', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -19,3 +19,9 @@ class registerForm(FlaskForm):
     postalCode = StringField('postal code', validators=[DataRequired()])
     fname = StringField('first name', validators=[DataRequired()])
     submit = SubmitField('Register')
+    
+class filterForm(FlaskForm):
+    city = StringField('enter city to filter', default='none')
+    category = StringField('enter category to filter by', default='none')
+    maxPrice = StringField('enter maximum price to filer by', default='none')
+    submit = SubmitField('Filter')

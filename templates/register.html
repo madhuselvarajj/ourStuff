@@ -1,72 +1,58 @@
-<!DOCTYPE html>
-<!--just temporary for testing register route-->
-<!-- note i pretty much copied what we had in html for the login route-->
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Our Stuff</title>
-  </head>
-  <body>
-    <h1>Register for an account</h1>
-
-    <!--displays the flash messages-->
-    <div class="col-md-8">
-          {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-              {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
-                  {{ message }}
+{% extends "base.html" %}
+{% block content %}
+        <div class="row">
+          <div class="col-sm">
+          </div>
+          <div class="col-sm">
+            <h1>Sign Up</h1>
+            <form method="POST" action="">
+              {{ form.hidden_tag() }}
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label>First Name</label>
+                  {{ form.fname(class="form-control form-control-md", placeholder="First Name") }}
                 </div>
-              {% endfor %}
-            {% endif %}
-          {% endwith %}
-          {% block content %}{% endblock %}
-    </div>
-
-    <form method="POST" action="">
-      {{ form.hidden_tag() }} <!--don't forget this-->
-
-      {{ form.email.label() }}
-      {{ form.email() }}
-      <br />
-  		<br />
-      {{ form.password.label() }}
-      {{ form.password() }}
-      <br />
-  		<br />
-	  {{ form.fname.label() }}
-	  {{form.fname() }}
-	  <br />
-	  	<br />
-	  {{ form.lname.label() }}
-	  {{form.lname() }}
-	  <br />
-	  <br />
-	  {{form.dob.label() }}
-	  {{form.dob() }}
-	  <br />
-	  <br />
-	  {{form.street.label() }}
-	  {{form.street() }}
-	  <br />
-	  <br />
-	  {{form.city.label() }}
-	  {{form.city() }}
-	  <br />
-	  <br />
-	  {{form.province.label() }}
-	  {{form.province() }}
-	  <br />
-	  <br />
-	  {{form.postalCode.label() }}
-	  {{form.postalCode() }}
-	  <br />
-	  <br />
-	  
-	  {{ form.submit() }}
-    </form>
-  </body>
-</html>
-
-	
-	
+                <div class="form-group col-md-6">
+                  <label>Last Name</label>
+                  {{ form.lname(class="form-control form-control-md", placeholder="Last Name") }}
+                </div>
+              </div>
+              <div class="form-group">
+                {{ form.email.label(class="form-control-label") }}
+                {{ form.email(class="form-control form-control-md", placeholder="Email") }}
+              </div>
+              <div class="form-group">
+                {{ form.password.label(class="form-control-label") }}
+                {{ form.password(class="form-control form-control-md", placeholder="Password") }}
+              </div>
+              <div class="form-group">
+                <label>Date of Birth</label>
+                {{ form.dob(class="form-control form-control-md", placeholder="YYYY-MM-DD") }}
+              </div>
+              <div class="form-group">
+                <label>Street Address</label>
+                {{form.street(class="form-control form-control-md", placeholder="Address") }}
+              </div>
+              <div class="form-row">
+                <div class="form-group col-md-5">
+                  <label>City</label>
+                  {{form.city(class="form-control form-control-md", placeholder="City") }}
+                </div>
+                <div class="form-group col-md-4">
+                  <label>Province</label>
+                  {{form.province(class="form-control form-control-md", placeholder="Province") }}
+                </div>
+                <div class="form-group col-md-3">
+                  <label>Postal Code</label>
+                  {{form.postalCode(class="form-control form-control-md", placeholder="Postal Code") }}
+                </div>
+              </div>
+              <div class="form-group">
+              {{ form.submit(class="btn btn-outline-info") }}
+              </div>
+            </form>
+          </div>
+          <div class="col-sm">
+          </div>
+        </div>
+{% endblock content%}
