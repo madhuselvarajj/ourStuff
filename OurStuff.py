@@ -46,8 +46,6 @@ def register():
 #login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    global loggedInUser = "" #global variables used to keep track of the user who is currently logged in.
-    global loggedInPass = ""
     form = LoginForm()
     if form.validate_on_submit():
         #look for user in db with matching email + password
