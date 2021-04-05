@@ -19,3 +19,15 @@ class registerForm(FlaskForm):
     postalCode = StringField('postal code', validators=[DataRequired()])
     fname = StringField('first name', validators=[DataRequired()])
     submit = SubmitField('Register')
+
+class UserInfoForm(FlaskForm):
+    fname = StringField('First Name')
+    lname = StringField('Last Name')
+    email = StringField('Email')
+    password = PasswordField('Password')
+    dob = DateField('Date')
+    street = StringField('street', validators=[DataRequired()])
+    city = StringField('City')
+    province = StringField('province')
+    postalCode = StringField('postal code')
+    submit = SubmitField('Save Changes')

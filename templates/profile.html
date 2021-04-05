@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+          <div class="row">
+              <div class="col-sm">
+              </div>
+              <div class="col-sm">
+                <h1>{{user[2]}} {{user[3]}}</h1>
+                <br>
+                <h5 id="profile">User Information</h5> <button type="button" class="btn btn-outline-info btn-sm float-right" onclick="window.location.href='{{url_for('editProfile', username='fname-lname')}}'">Edit Info</button>
+                <div class="card about-card">
+                  <div class="card-body about-card">
+                    <table class="table user-table m-0">
+                      <tbody>
+                        <tr>
+                          <td>Email:</td>
+                          <td>{{user[0]}}</td>
+                        </tr>
+                        <tr>
+                          <td>Date of Birth:</td>
+                          <td>{{user[4]}}</td>
+                        </tr>
+                        <tr>
+                          <td>Address:</td>
+                          <td>{{user[7]}} {{user[8]}}, {{user[9]}} {{user[10]}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <br>
+                <button type="button" class="btn btn-outline-info btn-lg">View Items Rented Out</button>
+                <button type="button" class="btn btn-outline-info btn-lg">View Rental History</button>
+              </div>
+              <div class="col-sm">
+              </div>
+          </div>
+
+{% endblock content%}

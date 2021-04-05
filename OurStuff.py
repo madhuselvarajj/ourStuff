@@ -1,6 +1,6 @@
 import sqlite3, flask
 from flask import jsonify, render_template, redirect, url_for, request, flash
-from forms import LoginForm
+from forms import LoginForm, UserInfoForm
 from forms import registerForm
 # redirect and url_for can be used to call different routes, ex: redirect(url_for('function_name'))
 
@@ -35,10 +35,6 @@ def register():
     else:
         return render_template('register.html', form=form)
 
-    # if GET, return a html form for user to sign up
-    # if POST, save user information in DB and return a redirect to login
-
-    # POST if user presses submit, before they press submit its a GET request
 
 #login
 @app.route('/login', methods=['GET', 'POST'])
@@ -95,9 +91,30 @@ def rent_item():
 # view profile (where user can view their transactions and items)
 @app.route('/user/<username>', methods=['GET'])
 def profile(username):
-    # if user is not logged in , redirect(url_for(login))
-    # load user information and display profile html page
-    return render_template()
+
+    # once flask-login is setup, send current_user to html page instead....if user not logged in then redirect to login
+    con = sqlite3.connect('ourStuff.db')
+    cur = con.cursor()
+    user = cur.execute('SELECT * FROM USER WHERE Email=?', ('madhuselvaraj24@gmail.com',)).fetchone() #just temporary, once flask-login is setup don't need to query DB
+    return render_template('profile.html', user=user)
+
+@app.route('/user/<username>/edit', methods=['GET', 'POST'])
+def editProfile(username):
+    form = UserInfoForm()
+    con = sqlite3.connect('ourStuff.db')
+    cur = con.cursor()
+    user = cur.execute('SELECT * FROM USER WHERE Email=?', ('madhuselvaraj24@gmail.com',)).fetchone() #temporary until flask-login is setup
+
+    # TODO: add validators to each of the form fields, then finish populating the form with the current_user's information
+    if form.validate_on_submit():
+        sql = '''UPDATE USER SET Street_address = form.street.data WHERE Email='madhuselvaraj24@gmail.com' '''
+        cur.execute(sql)
+        cur.close()
+        return redirect(url_for('profile', username='user[2]-user[3]'))
+    elif request.method=='GET': #populates the form with the current_user's information
+        form.email.data = user[0] #later do current_user.emai
+
+    return render_template('editProfile.html', form=form, user=user) #later user=current_user
 
 # view all renter transactions
 @app.route('/user/<username>/renter/transactions/all', methods = ['GET'])
