@@ -19,3 +19,9 @@ class registerForm(FlaskForm):
     postalCode = StringField('postal code', validators=[DataRequired()])
     fname = StringField('first name', validators=[DataRequired()])
     submit = SubmitField('Register')
+    
+class filterForm(FlaskForm):
+    city = StringField('enter city to filter', default='none')
+    category = StringField('enter category to filter by', default='none')
+    maxPrice = StringField('enter maximum price to filer by', default='none')
+    submit = SubmitField('Filter')
