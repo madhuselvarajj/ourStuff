@@ -38,3 +38,10 @@ class filterForm(FlaskForm):
     category = StringField('enter category to filter by', default='none')
     maxPrice = StringField('enter maximum price to filer by', default='none')
     submit = SubmitField('Filter')
+    
+class rentalRequestForm(FlaskForm):
+    startDate = DateField('starting date', validators=[DataRequired()])
+    duration = IntegerField('duration', validators=[DataRequired()])
+    pickup = DateField('pick up date', validators=[DataRequired()])
+    dropoff = DateField('drop off date', validators=[DataRequired()])
+    submit = SubmitField('Request this rental')
