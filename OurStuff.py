@@ -4,6 +4,7 @@ from forms import LoginForm, UserInfoForm
 from forms import registerForm
 from datetime import datetime
 from forms import filterForm
+from forms import rentalRequestForm
 
 # redirect and url_for can be used to call different routes, ex: redirect(url_for('function_name'))
 
