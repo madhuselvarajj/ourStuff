@@ -19,3 +19,15 @@ h1{
   padding-top: 0;
   padding-bottom: 0;
 }
+
+.text-light {
+    color: #babbbc !important;
+}
+
+.card .row-bordered>[class*=" col-"]::after {
+    border-color: rgba(24,28,33,0.075);
+}
+
+.text-xlarge {
+    font-size: 170% !important;
+}
