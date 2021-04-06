@@ -64,8 +64,8 @@ def login():
         con = sqlite3.connect(db)
         cur = con.cursor()
         user = cur.execute('SELECT * FROM USER WHERE Email=? AND Password=?', (form.email.data, form.password.data,)).fetchone()
-        loggedInUser = form.email.data
-        loggedInPass = form.password.data
+        loggedInEmail = form.email.data
+        loggedInPassword = form.password.data
 
         #if login successful redirect to home page....else stay on login page
         if user:
