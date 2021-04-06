@@ -126,7 +126,18 @@ def profile():
     con = sqlite3.connect('ourStuff.db')
     cur = con.cursor()
     user = cur.execute('SELECT * FROM USER WHERE Email=?', ('madhuselvaraj24@gmail.com',)).fetchone() #just temporary, once flask-login is setup don't need to query DB
-    return render_template('profile.html', user=user)
+    owner_rentals = cur.execute('SELECT COUNT (*) FROM RENTAL WHERE Owner_email=?', ('madhuselvaraj24@gmail.com',)) #after flask-login is setup, check if owner_email = current_user.email
+    num_owner_rentals = cur.fetchone()[0]
+    renter_rentals = cur.execute('SELECT COUNT (*) FROM RENTAL WHERE Renter_email=?', ('madhuselvaraj24@gmail.com',))
+    num_renter_rentals = cur.fetchone()[0]
+    interests = cur.execute('SELECT * FROM INTERESTED_IN WHERE User_email=?', ('madhuselvaraj24@gmail.com',)).fetchall()
+    all_interests = ""
+    if interests:
+        for i in interests:
+            all_interests += i[1] + ", "
+        return render_template('profile.html', user=user, o_rentals = num_owner_rentals, r_rentals = num_renter_rentals, interests = all_interests[:-2])
+    else:
+        return render_template('profile.html', user=user, o_rentals = num_owner_rentals, r_rentals = num_renter_rentals)
 
 @app.route('/profile/edit', methods=['GET', 'POST'])
 def editProfile():
@@ -137,7 +148,7 @@ def editProfile():
 
     # TODO: once flask-login is setup, change everything to current_user
     if form.validate_on_submit():
-        cur.execute('UPDATE USER SET Email=?, Password=?, First_name=?, Last_name=?, Dob=?, Owner=0, Renter=0, Street_address =?, City=?, Province=?, Postal_code=? WHERE Email=?',(form.email.data, form.password.data, form.fname.data, form.lname.data, form.dob.data, form.street.data, form.city.data, form.province.data, form.postalCode.data, 'madhuselvaraj24@gmail.com',))
+        cur.execute('UPDATE USER SET Email=?, Password=?, First_name=?, Last_name=?, Dob=?, Street_address =?, City=?, Province=?, Postal_code=? WHERE Email=?',(form.email.data, form.password.data, form.fname.data, form.lname.data, form.dob.data, form.street.data, form.city.data, form.province.data, form.postalCode.data, 'madhuselvaraj24@gmail.com',))
         con.commit()
         cur.close()
         return redirect(url_for('profile'))
@@ -147,10 +158,10 @@ def editProfile():
         form.fname.data = user[2]
         form.lname.data = user[3]
         form.dob.data = datetime.strptime(user[4], '%Y-%m-%d')
-        form.street.data = user[7]
-        form.city.data = user[8]
-        form.province.data = user[9]
-        form.postalCode.data = user[10]
+        form.street.data = user[5]
+        form.city.data = user[6]
+        form.province.data = user[7]
+        form.postalCode.data = user[8]
 
     return render_template('editProfile.html', form=form, user=user) #later user=current_user
 
