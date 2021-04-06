@@ -82,7 +82,7 @@ CREATE TABLE ITEM
     Category_name	TEXT,
     Owner_email		TEXT,
     Description		TEXT,
-    Daily_rate		INTEGER,
+    Daily_rate		REAL,
     PRIMARY KEY (Title, Owner_email),
     CONSTRAINT
         USR_FK FOREIGN KEY (Owner_email) REFERENCES USER(Email)
