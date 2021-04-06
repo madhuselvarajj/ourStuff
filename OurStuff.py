@@ -59,7 +59,7 @@ def login():
         global loggedInEmail
         global loggedInPassword
         if (loggedInEmail is not None):
-            flash('Another account is already logged in, 'error')
+            flash('Another account is already logged in', 'error')
         con = sqlite3.connect(db)
         cur = con.cursor()
         user = cur.execute('SELECT * FROM USER WHERE Email=? AND Password=?', (form.email.data, form.password.data,)).fetchone()
