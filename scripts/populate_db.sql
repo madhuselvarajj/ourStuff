@@ -6,9 +6,9 @@ INSERT INTO USER VALUES
     ('madhuselvaraj24@gmail.com', 'grapes', 'Madhu', 'Selvaraj', '2021-03-18', 'Not an address', 'Calgary', 'Alberta', 'H0H 0H0');
 
 INSERT INTO PHONE VALUES
-    ('stephanedorotich@gmail.com','403','444-9910'),
-	('stephanedorotich@gmail.com','587','444-9910'),
-    ('navjotsk99@gmail.com','999','999-9999');
+    ('stephanedorotich@gmail.com','403-444-9910'),
+	('stephanedorotich@gmail.com','587-444-9910'),
+    ('navjotsk99@gmail.com','999-999-9999');
 
 INSERT INTO ADMIN VALUES
     (12345, 'securePassword');
@@ -37,7 +37,7 @@ INSERT INTO ITEM_BLACKOUT VALUES
     ("Shogun, James Clavell","stephanedorotich@gmail.com","2021-03-01","2021-03-31");
 
 INSERT INTO RENTAL VALUES
-    (1,"madhuselvaraj24@gmail.com","stephanedorotich@gmail.com","Fundamentals of Database Systems, Elmasri and Navathe","2021-03-01",14,"10:30","10:30","complete",False,False),
+    (0,"madhuselvaraj24@gmail.com","stephanedorotich@gmail.com","Fundamentals of Database Systems, Elmasri and Navathe","2021-03-01",14,"10:30","10:30","complete",False,False),
 	(1,"navjotsk99@gmail.com","stephanedorotich@gmail.com","Fundamentals of Database Systems, Elmasri and Navathe","2021-03-25", 14,"13:45","20:00","Pending",False,False);
 
 INSERT INTO INTERESTED_IN VALUES
