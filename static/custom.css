@@ -1,3 +1,21 @@
 h1{
   padding-top: 25px;
 }
+
+#profile{
+  display: inline-block;
+  padding-right: 10px;
+  margin-bottom: 20px;
+}
+.user-table td {
+    padding-right: 0;
+    padding-left: 0;
+    border: 0;
+}
+
+.about-card{
+  padding-right: 0;
+  padding-left: 1;
+  padding-top: 0;
+  padding-bottom: 0;
+}
