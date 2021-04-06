@@ -9,6 +9,9 @@ from forms import filterForm
 
 filer_item = "" #define the global variable used in multiple functions below
 
+# define database name
+db = "ourStuff.db"
+
 # create the app
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -28,7 +31,7 @@ def home():
 def register():
     form = registerForm()
     if form.validate_on_submit():
-        con = sqlite3.connect('ourStuff.db')
+        con = sqlite3.connect(db)
         cur = con.cursor()
         registration = cur.execute('INSERT INTO USER (Email, Password, First_name, Last_name, DoB,Street_address ,City,Province, Postal_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', (form.email.data, form.password.data, form.fname.data, form.lname.data, form.dob.data, form.street.data, form.city.data, form.province.data, form.postalCode.data))
         con.commit()
@@ -51,7 +54,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         #look for user in db with matching email + password
-        con = sqlite3.connect('ourStuff.db')
+        con = sqlite3.connect(db)
         cur = con.cursor()
         user = cur.execute('SELECT * FROM USER WHERE Email=? AND Password=?', (form.email.data, form.password.data,)).fetchone()
         loggedInUser = form.email.data
@@ -70,7 +73,7 @@ def view_all():
     # Load all items from DB, then pass to browse.html file to display
     #use the global variable filter_item
     form = filterForm()
-    con = sqlite3.connect('ourStuff.db')
+    con = sqlite3.connect(db)
     cur = con.cursor()
     if form.validate_on_submit():
         if (form.category.data != 'none' and form.city.data != 'none' and form.maxPrice.data != 'none'):
@@ -201,7 +204,7 @@ def owner_items(username):
 
 @app.route('/users',methods=['GET'])
 def sampleQuery1():
-    con = sqlite3.connect('ourStuff.db')
+    con = sqlite3.connect(db)
     cur = con.cursor()
     users = cur.execute('SELECT * FROM USER;').fetchall()
     return jsonify(users)
