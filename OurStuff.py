@@ -4,8 +4,13 @@ from forms import LoginForm, UserInfoForm
 from forms import registerForm
 from datetime import datetime
 from forms import filterForm
+from forms import rentalRequestForm
 
+# redirect and url_for can be used to call different routes, ex: redirect(url_for('function_name'))
 filer_item = "" #define the global variable used in multiple functions below
+loggedInEmail = None #global variable used to show who's currently logged in
+loggedInPassword = None #global variable used to show who's currently logged in
+transactionID = 0 #global variable which increments with each transaction
 
 # define database name
 db = "ourStuff.db"
@@ -52,6 +57,10 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         #look for user in db with matching email + password
+        global loggedInEmail
+        global loggedInPassword
+        if (loggedInEmail is not None):
+            flash('Another account is already logged in', 'error')
         con = sqlite3.connect(db)
         cur = con.cursor()
         user = cur.execute('SELECT * FROM USER WHERE Email=? AND Password=?', (form.email.data, form.password.data,)).fetchone()
@@ -67,13 +76,14 @@ def login():
 
     return render_template('login.html', form=form)
 
+
 # view all items
 @app.route('/browse/all', methods=['GET', 'POST'])
 def view_all():
     # Load all items from DB, then pass to browse.html file to display
     #use the global variable filter_item
     form = filterForm()
-    con = sqlite3.connect(db)
+    con = sqlite3.connect('ourStuff.db')
     cur = con.cursor()
     if form.validate_on_submit():
         if (form.category.data != 'none' and form.city.data != 'none' and form.maxPrice.data != 'none'):
@@ -107,16 +117,43 @@ def view_all():
     return render_template('browse.html', data=data, form=form) #show the data in the html
 
 # user requests to rent item
-@app.route('/browse/item/rent', methods=['GET', 'POST'])
-def rent_item():
+# not sure if route is correct
+@app.route('/browse/item/rent/<string:title>', methods=['GET', 'POST'])
+def rent_item(title):
+    form = rentalRequestForm()
+    global transactionID
+    global loggedInEmail
+    global loggedInPassword
     # if GET, return a html form for user to enter their transaction + rental information
     # if POST, create a transaction entry in DB using user information -> then redirect back to home page
-    if request.method == "GET" :
-        return render_template() #render the template of the rental screen
-    else :
-        startRentalDate = request.form["start"]
-        endRentalDate = request.form["end"]
-        return render_template() #render the home page again or a confirmation page
+    if form.validate_on_submit():
+        start = form.startDate.data
+        duration = form.duration.data
+        pickup = form.pickup.data
+        dropoff = form.dropoff.data
+        #connect to the database so we can add a new entry
+        con = sqlite3.connect('ourStuff.db')
+        cur = con.cursor()
+        #get the relevant information about this item
+        cur.execute("SELECT * FROM ITEM WHERE Title=?", (title,))
+        item = cur.fetchall() #array of the query
+        #title is probably not returning anything!
+        #return an error message if nobody is logged in at the moment
+        if (loggedInEmail is None) :
+            flash('Please login or register for an account if you would like to rent this item', 'error')
+            return redirect(url_for('home'))
+        theTuple = item[0] #should only fetch one result anyways since the title is PK
+        transactionID = transactionID+1
+        pendingString = "PENDING"
+        cur.execute("INSERT INTO RENTAL (tID, Renter_email, Owner_email, Item_title, Start_date, Duration, Pick_up_time, Drop_off_time, Type, Rating, Review) VALUES (?,?,?,?,?,?,?,?,?,?,?)", (transactionID, loggedInEmail, theTuple[2], theTuple[0], start, duration, pickup, dropoff, pendingString, None, None))
+        con.commit()
+        cur.close()
+        flash('The rental request has been submitted successfully.', 'error')
+
+
+        return redirect(url_for('home'))
+
+    return render_template('rentItem.html', title=title, form=form) #render the home page again or a confirmation page
 
 # view profile (where user can view their transactions and items)
 @app.route('/profile', methods=['GET'])

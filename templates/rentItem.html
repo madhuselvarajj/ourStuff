@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+        <div class="row">
+          <div class="col-sm">
+          </div>
+          <div class="col-sm">
+            <h1>Request to rent an item: {{title}} </h1>
+            <form method="POST" action="">
+              {{ form.hidden_tag() }}
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label>Start Date</label>
+                  {{ form.startDate(class="form-control form-control-md", placeholder="start date") }}
+                </div>
+                <div class="form-group col-md-6">
+                  <label>duration of rental</label>
+                  {{ form.duration(class="form-control form-control-md", placeholder="duration") }}
+                </div>
+              </div>
+              <div class="form-group">
+                {{ form.pickup.label(class="form-control-label") }}
+                {{ form.pickup(class="form-control form-control-md", placeholder="pickup date") }}
+              </div>
+              <div class="form-group">
+                {{ form.dropoff.label(class="form-control-label") }}
+                {{ form.dropoff(class="form-control form-control-md", placeholder="dropoff date") }}
+              </div>
+              <div class="form-group">
+              {{ form.submit(class="btn btn-outline-info") }}
+              </div>
+            </form>
+          </div>
+          <div class="col-sm">
+          </div>
+        </div>
+{% endblock content%}

@@ -38,20 +38,21 @@
       <br>
       {% for row in data %}
       <tr>
-  <b>name:</b>
-  <td><a>{{row[0]}}</a></td>
-  <br>
-  <b>category:</b>
-    <td>{{row[1]}}</td>
-  <br>
-  <b>description:</b>
-  <td>{{row[3]}}</td>
-  <br>
-  <b>daily rate:</b>
-  <td>{{row[4]}}</td>
-  <br>
-  <br>
-  <br>
+      <a href='/browse/item/rent/{{row[0]}}'> 
+      <b>name:</b>
+      <td>{{row[0]}}</td>
+      <br>
+      <b>category:</b>
+      <td>{{row[1]}}</td>
+      <br>
+      <b>description:</b>
+      <td>{{row[3]}}</td>
+      <br>
+      <b>daily rate:</b>
+      <td>{{row[4]}}</td>
+      <br>
+      <br>
+      <br>
       </tr>
       {% endfor %}
   </ul>
