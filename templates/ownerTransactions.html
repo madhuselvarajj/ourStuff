@@ -27,7 +27,11 @@
                         <td>{{row[5]}} days</td>
                         <td>{{row[6]}}</td>
                         <td>{{row[7]}}</td>
-                        <td>{{row[1]}}<button type="button" class="btn btn-info btn-sm btn float-right">Approve</button></td>
+                        <td>{{row[1]}}
+                          <form method="POST" action="">
+                            <button name="approveBtn" type="submit" class="btn btn-info btn-sm btn float-right" value={{row[0]}}>Approve</button
+                          </form>
+                        </td>
                       </tr>
                     {% endfor %}
                   </tbody>
@@ -56,7 +60,11 @@
                         <td>{{row[5]}} days</td>
                         <td>{{row[6]}}</td>
                         <td>{{row[7]}}</td>
-                        <td>{{row[1]}}<button type="button" class="btn btn-info btn-sm btn float-right">Mark as Complete</button></td>
+                        <td>{{row[1]}}
+                          <form method="POST" action="">
+                            <button name="completeBtn" type="submit" class="btn btn-info btn-sm btn float-right" value={{row[0]}}>Mark as Complete</button>
+                          </form>
+                        </td>
                       </tr>
                     {% endfor %}
                   </tbody>
@@ -67,7 +75,7 @@
               <br>
               <br>
               <h6>Completed Transactions</h6>
-              {% if completed%}
+              {% if complete%}
                 <table class="table table-sm">
                   <thead class="thead-light">
                     <tr>
@@ -78,7 +86,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    {% for row in completed %}
+                    {% for row in complete %}
                       <tr>
                         <td>{{row[3]}}</td>
                         <td>{{row[1]}}</td>

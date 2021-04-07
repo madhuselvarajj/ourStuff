@@ -85,12 +85,54 @@
                         {% if row[9] != 0%}
                           <td>{{row[9]}}</td>
                         {% else %}
-                          <td> <button type="button" class="btn btn-info btn-sm">Rate</button></td>
+                          <td>
+                            <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#rateModal">Rate</button>
+                            <div class="modal fade" id="rateModal" tabindex="-1" role="dialog" aria-labelledby="rateModalTitle" aria-hidden="true">
+                              <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="rateModal">Rate your rental experience</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true">&times;</span>
+                                    </button>
+                                  </div>
+                                  <div class="modal-body">
+                                    <form method="POST" action="{{ url_for('renterTransactions',r=1)}}">
+                                        <label for="message-text" class="col-form-label">Rating (1-5):</label>
+                                        <input type="text" class="form-control" name="rating">
+                                        <button type="submit" class="btn btn-primary float-right" name="ratingBtn" value="{{row[0]}}">Save</button> <!--fix button placement later-->
+                                    </form>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
                         {% endif %}
                         {% if row[10] != "0"%}
                           <td>{{row[10]}}</td>
                         {% else %}
-                          <td> <button type="button" class="btn btn-info btn-sm">Write Review</button></td>
+                          <td>
+                            <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#reviewModal">Review</button>
+                            <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalTitle" aria-hidden="true">
+                              <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="reviewModal">Review your rental experience</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true">&times;</span>
+                                    </button>
+                                  </div>
+                                  <div class="modal-body">
+                                    <form method="POST" action="{{ url_for('renterTransactions')}}">
+                                        <label for="message-text" class="col-form-label">Write your review:</label>
+                                        <textarea class="form-control" id="message-text" name="review"></textarea>
+                                        <button type="submit" class="btn btn-primary float-right" name="reviewBtn" value="{{row[0]}}">Save</button> <!--fix button placement later-->
+                                    </form>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
                         {% endif %}
                         <td>{{row[2]}} <button type="button" class="btn btn-info btn-sm float-right">Report User</button></td>
                       </tr>
