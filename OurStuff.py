@@ -161,9 +161,9 @@ def renterTransactions(r=None):
     # r is always None unless a rating was submitted
     con = sqlite3.connect(db)
     cur = con.cursor()
-    pending = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (loggedInEmail,'pending',)).fetchall() #owner hasn't approved yet
-    booked = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (loggedInEmail,'booked',)).fetchall() #active rental
-    complete = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (loggedInEmail,'complete',)).fetchall() #completed rental (item returned)
+    pending = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (g.user['Email'],'pending',)).fetchall() #owner hasn't approved yet
+    booked = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (g.user['Email'],'booked',)).fetchall() #active rental
+    complete = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (g.user['Email'],'complete',)).fetchall() #completed rental (item returned)
     if request.method == 'GET':
         if pending and booked and complete:
             return render_template('renterTransactions.html', pending = pending, booked = booked, complete = complete)
@@ -196,9 +196,9 @@ def renterTransactions(r=None):
 def ownerTransactions():
     con = sqlite3.connect(db)
     cur = con.cursor()
-    pending = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (loggedInEmail,'pending',)).fetchall() #need to approve
-    booked = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (loggedInEmail,'booked',)).fetchall() #active rental
-    complete = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (loggedInEmail,'complete',)).fetchall() #item returned
+    pending = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (g.user['Email'],'pending',)).fetchall() #need to approve
+    booked = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (g.user['Email'],'booked',)).fetchall() #active rental
+    complete = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (g.user['Email'],'complete',)).fetchall() #item returned
 
     if request.method=='GET':
         if pending and booked and complete:
