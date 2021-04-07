@@ -171,7 +171,6 @@ def rent_item(title):
 # view profile (where user can view their transactions and items)
 @app.route('/profile', methods=['GET'])
 def profile():
-    # TODO: once flask-login is setup, first check if current_user is logged in (redirect to login if not)
     if loggedInEmail is None:
         flash('Please login first.', 'danger')
         return redirect(url_for('login'))
@@ -199,14 +198,13 @@ def editProfile():
     cur = con.cursor()
     user = cur.execute('SELECT * FROM USER WHERE Email=?', (loggedInEmail,)).fetchone()
 
-    # TODO: once flask-login is setup, change everything to current_user
     if form.validate_on_submit():
         cur.execute('UPDATE USER SET Email=?, Password=?, First_name=?, Last_name=?, Dob=?, Street_address =?, City=?, Province=?, Postal_code=? WHERE Email=?',(form.email.data, form.password.data, form.fname.data, form.lname.data, form.dob.data, form.street.data, form.city.data, form.province.data, form.postalCode.data, loggedInEmail,))
         con.commit()
         cur.close()
         return redirect(url_for('profile'))
     elif request.method=='GET': #populates the form with the current_user's information
-        form.email.data = user[0] #later do current_user.email
+        form.email.data = user[0] 
         form.password.data = user[1]
         form.fname.data = user[2]
         form.lname.data = user[3]
@@ -216,7 +214,7 @@ def editProfile():
         form.province.data = user[7]
         form.postalCode.data = user[8]
 
-    return render_template('editProfile.html', form=form, user=user) #later user=current_user
+    return render_template('editProfile.html', form=form, user=user) 
 
 # view all renter transactions
 @app.route('/profile/renter/transactions/all', methods = ['GET', 'POST'])
