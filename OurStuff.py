@@ -7,27 +7,17 @@ from forms import RentalRequestForm
 import auth
 from auth import login_required, get_db
 
-# redirect and url_for can be used to call different routes, ex: redirect(url_for('function_name'))
-filer_item = "" #define the global variable used in multiple functions below
-loggedInEmail = None #global variable used to show who's currently logged in
-loggedInPassword = None #global variable used to show who's currently logged in
-transactionID = 1000 #global variable which increments with each transaction
-
-# define database name
-db = "ourStuff.db"
-
 # create the app
+# TODO: make a create_app function
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 app.config['SECRET_KEY'] = 'a722544382860619226245081983ab8f' #needed to use flask_wtforms
 app.register_blueprint(auth.bp)
 
-
 # home page
 @app.route('/', methods=['GET'])
 @app.route('/home', methods=['GET'])
 def home():
-    # temporary
     return render_template('home.html')
 
 # view all items
@@ -36,9 +26,13 @@ def view_all():
     # Load all items from DB, then pass to browse.html file to display
     #use the global variable filter_item
     form = FilterForm()
-    con = sqlite3.connect('ourStuff.db')
-    cur = con.cursor()
-    if form.validate_on_submit():
+
+    # connect to db
+    db = get_db()
+    cur = db.cursor()
+
+    # TODO: remove default none parameter. may be able to condense to a single sql statement?
+    if request.method == 'POST' and form.validate_on_submit():
         if (form.category.data != 'none' and form.city.data != 'none' and form.maxPrice.data != 'none'):
             cur.execute("SELECT * FROM ITEM, USER WHERE USER.Email = ITEM.Owner_email AND Category_name=? AND Daily_rate<=? AND USER.City =?", (form.category.data, form.maxPrice.data, form.city.data))
         elif (form.category.data != 'none' and form.city.data != 'none'):
@@ -58,13 +52,9 @@ def view_all():
 
         elif (form.maxPrice.data != 'none'):
             cur.execute("SELECT * FROM ITEM WHERE Daily_rate<=?", (form.maxPrice.data,))
-
         else:
             cur.execute("SELECT * FROM ITEM")
-
     else:
-        cur.execute("SELECT * FROM ITEM")
-    if request.method == 'GET':
         cur.execute("SELECT * FROM ITEM")
     data = cur.fetchall() #an array of all items fetched from DB
     return render_template('browse.html', data=data, form=form) #show the data in the html
@@ -75,38 +65,29 @@ def view_all():
 @login_required
 def rent_item(title):
     form = RentalRequestForm()
-    global transactionID
-    global loggedInEmail
-    global loggedInPassword
-    # if GET, return a html form for user to enter their transaction + rental information
-    # if POST, create a transaction entry in DB using user information -> then redirect back to home page
-    if form.validate_on_submit():
-        start = form.startDate.data
-        duration = form.duration.data
-        pickup = form.pickup.data
-        dropoff = form.dropoff.data
-        #connect to the database so we can add a new entry
-        con = sqlite3.connect('ourStuff.db')
-        cur = con.cursor()
-        #get the relevant information about this item
-        cur.execute("SELECT * FROM ITEM WHERE Title=?", (title,))
-        item = cur.fetchall() #array of the query
-        #title is probably not returning anything!
-        #return an error message if nobody is logged in at the moment
-        if (loggedInEmail is None) :
-            flash('Please login or register for an account if you would like to rent this item', 'success')
-            return redirect(url_for('home'))
-        theTuple = item[0] #should only fetch one result anyways since the title is PK
-        transactionID = transactionID+10
-        pendingString = "PENDING"
-        cur.execute("INSERT INTO RENTAL (tID, Renter_email, Owner_email, Item_title, Start_date, Duration, Pick_up_time, Drop_off_time, Type, Rating, Review) VALUES (?,?,?,?,?,?,?,?,?,?,?)", (transactionID, loggedInEmail, theTuple[2], theTuple[0], start, duration, pickup, dropoff, pendingString, None, None))
-        con.commit()
-        cur.close()
-        flash('The rental request has been submitted successfully.', 'error')
+    if request.method == 'POST':
+        # if GET, return a html form for user to enter their transaction + rental information
+        # if POST, create a transaction entry in DB using user information -> then redirect back to home page
+        if form.validate_on_submit():
+            start = form.startDate.data
+            duration = form.duration.data
+            pickup = form.pickup.data
+            dropoff = form.dropoff.data
+            #connect to the database so we can add a new entry
+            db = get_db()
+            cur = db.cursor()
+            #get the relevant information about this item
+            item = cur.execute("SELECT * FROM ITEM WHERE Title=?", (title,)).fetchone()
+            #title is probably not returning anything!
+            #return an error message if nobody is logged in at the moment
+            if (g.user is None):
+                flash('Please login or register for an account if you would like to rent this item', 'success')
+                return render_template('rentItem.html', title=title, form=form) #render the home page again or a confirmation page
 
-
+            cur.execute("INSERT INTO RENTAL (Renter_email, Owner_email, Item_title, Start_date, Duration, Pick_up_time, Drop_off_time, Type) VALUES (?,?,?,?,?,?,?,?)", (g.user['Email'], item[2], item[0], start, duration, pickup, dropoff, "PENDING"))
+            db.commit()
+            flash('The rental request has been submitted successfully.', 'success')
         return redirect(url_for('home'))
-
     return render_template('rentItem.html', title=title, form=form) #render the home page again or a confirmation page
 
 # view profile (where user can view their transactions and items)
