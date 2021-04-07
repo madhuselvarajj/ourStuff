@@ -37,8 +37,7 @@ INSERT INTO ITEM_BLACKOUT VALUES
 
 INSERT INTO RENTAL VALUES
 	(0, "madhuselvaraj24@gmail.com", "stephanedorotich@gmail.com", "Fundamentals of Database Systems, Elmasri and Navathe", "2021-03-01", 14, "10:30", "10:30", "complete", 0, "0"),
-	(1, "navjotsk99@gmail.com", "madhuselvaraj24@gmail.com", "book", "2021-03-01", 14, "10:30", "10:30", "pending", 0, "0"),
-	(2, "navjotsk99@gmail.com", "stephanedorotich@gmail.com", "Fundamentals of Database Systems, Elmasri and Navathe", "2021-03-25", 14, "13:45", "20:00", "pending", 0, "0");
+	(1, "navjotsk99@gmail.com", "stephanedorotich@gmail.com", "Fundamentals of Database Systems, Elmasri and Navathe", "2021-03-25", 14, "13:45", "20:00", "pending", 0, "0");
 
 INSERT INTO INTERESTED_IN VALUES
 	("stephanedorotich@gmail.com", "Historical fiction"),

@@ -219,15 +219,15 @@ def editProfile():
     return render_template('editProfile.html', form=form, user=user) #later user=current_user
 
 # view all renter transactions
-@app.route('/profile/renter/transactions/all', methods = ['GET'])
-def renterTransactions():
+@app.route('/profile/renter/transactions/all', methods = ['GET', 'POST'])
+def renterTransactions(r=None):
+    # r is always None unless a rating was submitted
     con = sqlite3.connect(db)
     cur = con.cursor()
-    #once flask-login is setup check for current_user.email instead
-    if request.method=='GET':
-        pending = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (loggedInEmail,'pending',)).fetchall() #owner hasn't approved yet
-        booked = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (loggedInEmail,'booked',)).fetchall() #active rental
-        complete = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (loggedInEmail,'complete',)).fetchall() #completed rental (item returned)
+    pending = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (loggedInEmail,'pending',)).fetchall() #owner hasn't approved yet
+    booked = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (loggedInEmail,'booked',)).fetchall() #active rental
+    complete = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (loggedInEmail,'complete',)).fetchall() #completed rental (item returned)
+    if request.method == 'GET':
         if pending and booked and complete:
             return render_template('renterTransactions.html', pending = pending, booked = booked, complete = complete)
         elif pending and booked:
@@ -244,6 +244,14 @@ def renterTransactions():
             return render_template('renterTransactions.html', complete = complete)
         else:
             return render_template('renterTransactions.html')
+    elif request.method == 'POST':
+        if complete and r is not None and request.form['ratingBtn'] is not None:
+            cur.execute('UPDATE RENTAL SET Rating=? WHERE tID=?',(int(request.form['rating']),request.form['ratingBtn']))
+        elif complete and request.form['reviewBtn'] is not None:
+            cur.execute('UPDATE RENTAL SET Review=? WHERE tID=?',(request.form['review'],request.form['reviewBtn']))
+        con.commit()
+        cur.close()
+        return redirect(url_for('renterTransactions'))
 
 
 # view all owner transactions
