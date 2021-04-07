@@ -1,7 +1,7 @@
 INSERT INTO USER VALUES
-	("stephanedorotich@gmail.com", "apples", "Stephane", "Dorotich", "1994-03-26", "Not an address", "Cochrane", "Alberta", "H0H 0H0"),
-	("navjotsk99@gmail.com", "oranges", "Navjot", "Singh", "2021-03-18", "Not an address", "Calgary", "Alberta", "H0H 0H0"),
-	("madhuselvaraj24@gmail.com", "grapes", "Madhu", "Selvaraj", "2021-03-18", "Not an address", "Calgary", "Alberta", "H0H 0H0");
+	("stephanedorotich@gmail.com", "pbkdf2:sha256:150000$d2tHEpTO$da4ab345d9aa6d7d3ba10b1aa346a75c37732fc349d704d2874e82eee737518f", "Stephane", "Dorotich", "1994-03-26", "Not an address", "Cochrane", "Alberta", "H0H 0H0"),
+	("navjotsk99@gmail.com", "pbkdf2:sha256:150000$JiPTTtm7$f00d6741926e46081d90b3bd29e7e6b5d95c6413274fbda86368ee0320978211", "Navjot", "Singh", "2021-03-18", "Not an address", "Calgary", "Alberta", "H0H 0H0"),
+	("madhuselvaraj24@gmail.com", "pbkdf2:sha256:150000$GQz0JnSA$32a66875998105360cbe47d92560a0886ba8351f536eaf906792eb57548c301e", "Madhu", "Selvaraj", "2021-03-18", "Not an address", "Calgary", "Alberta", "H0H 0H0");
 
 INSERT INTO PHONE VALUES
 	("stephanedorotich@gmail.com", "403-444-9910"),

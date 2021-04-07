@@ -8,7 +8,7 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
-class registerForm(FlaskForm):
+class RegisterForm(FlaskForm):
     lname = StringField('last name', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired()])
@@ -33,13 +33,13 @@ class UserInfoForm(FlaskForm):
     submit = SubmitField('Save Changes', validators=[DataRequired()])
 
 
-class filterForm(FlaskForm):
+class FilterForm(FlaskForm):
     city = StringField('enter city to filter', default='none')
     category = StringField('enter category to filter by', default='none')
     maxPrice = StringField('enter maximum price to filer by', default='none')
     submit = SubmitField('Filter')
     
-class rentalRequestForm(FlaskForm):
+class RentalRequestForm(FlaskForm):
     startDate = DateField('starting date', validators=[DataRequired()])
     duration = IntegerField('duration', validators=[DataRequired()])
     pickup = DateField('pick up date', validators=[DataRequired()])
