@@ -10,7 +10,7 @@ from forms import rentalRequestForm
 filer_item = "" #define the global variable used in multiple functions below
 loggedInEmail = None #global variable used to show who's currently logged in
 loggedInPassword = None #global variable used to show who's currently logged in
-transactionID = 0 #global variable which increments with each transaction
+transactionID = 1000 #global variable which increments with each transaction
 
 # define database name
 db = "ourStuff.db"
@@ -153,10 +153,10 @@ def rent_item(title):
         #title is probably not returning anything!
         #return an error message if nobody is logged in at the moment
         if (loggedInEmail is None) :
-            flash('Please login or register for an account if you would like to rent this item', 'error')
+            flash('Please login or register for an account if you would like to rent this item', 'success')
             return redirect(url_for('home'))
         theTuple = item[0] #should only fetch one result anyways since the title is PK
-        transactionID = transactionID+1
+        transactionID = transactionID+10
         pendingString = "PENDING"
         cur.execute("INSERT INTO RENTAL (tID, Renter_email, Owner_email, Item_title, Start_date, Duration, Pick_up_time, Drop_off_time, Type, Rating, Review) VALUES (?,?,?,?,?,?,?,?,?,?,?)", (transactionID, loggedInEmail, theTuple[2], theTuple[0], start, duration, pickup, dropoff, pendingString, None, None))
         con.commit()
