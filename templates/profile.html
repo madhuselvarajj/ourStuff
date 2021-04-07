@@ -4,7 +4,7 @@
               <div class="col-sm">
               </div>
               <div class="col-sm">
-                <h1>{{user[2]}} {{user[3]}}</h1>
+                <h1>{{g.user['First_name']}} {{g.user['Last_name']}}</h1>
                 <br>
                 <div class="card">
                   <div class="row no-gutters row-bordered">
@@ -26,15 +26,15 @@
                       <tbody>
                         <tr>
                           <td>Email:</td>
-                          <td>{{user[0]}}</td>
+                          <td>{{g.user['Email']}}</td>
                         </tr>
                         <tr>
                           <td>Date of Birth:</td>
-                          <td>{{user[4]}}</td>
+                          <td>{{g.user['DoB']}}</td>
                         </tr>
                         <tr>
                           <td>Address:</td>
-                          <td>{{user[5]}} {{user[6]}}, {{user[7]}} {{user[8]}}</td>
+                          <td>{{g.user['Street_address']}}, {{g.user['City']}}, {{g.user['Province']}}, {{g.user['Postal_code']}}</td>
                         </tr>
                         {% if interests%}
                           <tr>
@@ -42,14 +42,12 @@
                             <td>{{interests}}</td>
                           </tr>
                         {% endif %}
-
                       </tbody>
                     </table>
                   </div>
                 </div>
                 <br>
-                <button type="button" class="btn btn-outline-info btn-sm float-right" onclick="window.location.href='{{url_for('logout')}}'">Logout</button> <!--change the margins -->
-                <button type="button" class="btn btn-outline-info btn-sm float-right" onclick="window.location.href='{{url_for('editProfile')}}'">Edit Info</button>
+                <button type="button" class="btn btn-outline-info btn-sm float-right" onclick="window.location" href="{{url_for('editProfile')}}">Edit Info</button>
               </div>
               <div class="col-sm">
               </div>
