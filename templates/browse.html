@@ -1,11 +1,9 @@
 
 {% extends "base.html" %}
 {% block content %}
-<div class="row">
-  <div class="col-sm-1">
-  </div>
-  <div class="col-sm-3">
-    <h1>Filter Results</h1>
+<div class="row mx-sm-4">
+  <div class="col-sm-4">
+    <h1>Browse</h1>
     <form method="POST" action="">
       {{ form.hidden_tag() }}
       <div class="form-row">
@@ -27,17 +25,26 @@
       </div>
     </form>
   </div>
-  <div class="col-sm-7">
-    <h4 style="padding: 20px">Items available for rent.</h4>
-    <div class="table-responsive">
-      <table class="table">
+  <div class="col-sm-8">
+    <div class="row py-sm-4">
+      <h4>Items available for rent.</h4>
+    </div>
+    <div class="row">
+      {% for row in data %}
+      <table class="table table-light mx-sm-4">
+        <thead>
+          <tr>
+            <th style="width: 20%"></th>
+            <th style="width: 60%"></th>
+            <th style="width: 20%"></th>
+          </tr>
+        </thead>
         <tbody>
-         {% for row in data %}
           <tr scope="row">
             <th class="text-right">name:</th>
             <td>{{row[0]}}</td>
             <td class="align-middle" rowspan="4">
-              <a type="submit" class="btn btn-success text-center" href="/browse/item/rent/{{row[0]}}">Rent Item</a>
+              <a type="submit" class="btn btn-success text-center d-flex justify-content-center" href="/browse/item/rent/{{row[0]}}">Rent Item</a>
             </td>
           </tr>
           <tr scope="row">
@@ -52,12 +59,10 @@
             <th class="text-right">daily rate:</th>
             <td>{{row[4]}}</td>
           </tr>
-          <tr scope="row"><td class="text-center" colspan="3"></td></tr>
-          {% endfor %}
         </tbody>
       </table>
+      {% endfor %}
     </div>
-    <div class="col-sm-1"></div>
   </div>
 </div>
 {% endblock content%}
