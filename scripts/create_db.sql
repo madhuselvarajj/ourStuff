@@ -109,7 +109,7 @@ CREATE TABLE ITEM_BLACKOUT
 
 CREATE TABLE RENTAL
 (
-    tID				INTEGER		PRIMARY KEY     AUTOINCREMENT,
+    tID				INTEGER		PRIMARY KEY,
     Renter_email	TEXT		NOT NULL,
     Owner_email		TEXT		NOT NULL,
     Item_title		TEXT		NOT NULL,
@@ -118,8 +118,8 @@ CREATE TABLE RENTAL
     Pick_up_time	TEXT		NOT NULL,
     Drop_off_time	TEXT		NOT NULL,
     Type			TEXT		NOT NULL,
-    Rating			INTEGER,
-    Review			TEXT,
+    Rating			INTEGER     DEFAULT NULL,
+    Review			TEXT        DEFAULT NULL,
     CONSTRAINT
         RENTER_FK FOREIGN KEY (Renter_email) REFERENCES USER(Email)
             ON DELETE SET NULL       ON UPDATE CASCADE,

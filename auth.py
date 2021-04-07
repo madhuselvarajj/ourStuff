@@ -15,17 +15,16 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @bp.before_app_request
 def load_logged_in_user():
+    # session['user_id'] is set by Login() and passed on before every
+    # app request until the user logs out.
     user_id = session.get('user_id')
 
     if user_id is None:
         g.user = None
-    else:
+    else:  
         g.user = get_db().execute(
             'SELECT * FROM user WHERE email = ?', (user_id,)
         ).fetchone()
-
-def user_logged_in():
-    return g.user is not None
 
 def login_required(view):
     @functools.wraps(view)
@@ -38,7 +37,10 @@ def login_required(view):
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
+    #register
     form = RegisterForm()
+
+    # POST: register form submission
     if request.method == 'POST':
         if form.validate_on_submit():
             db = get_db()
@@ -53,22 +55,21 @@ def register():
             flash('Please enter the appropriate information in the fields. Make sure Date of Birth is in the form yyyy-mm-dd.', 'error')
     return render_template('register.html', form=form)
 
-    # if GET, return a html form for user to sign up
-    # if POST, save user information in DB and return a redirect to login
-
-    # POST if user presses submit, before they press submit its a GET request
-
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
     #login
     form = LoginForm()
+    # POST: login form submission
     if request.method == 'POST':
         if form.validate_on_submit():
             username = request.form['email']
+            # connect to db
             db = get_db()
+            cur = db.cursor()
             error = None
 
-            user = db.execute('SELECT * FROM USER WHERE Email=?', (username,)).fetchone()
+            # Find matching user
+            user = cur.execute('SELECT * FROM USER WHERE Email=?', (username,)).fetchone()
 
             if user is None:
                 error = 'Incorrect username.'
@@ -76,13 +77,16 @@ def login():
                 error = 'Incorrect passsword.'
 
             if error is None:
-                session.clear()
-                session['user_id'] = user['Email']
+                session.clear() # remove any session data
+                session['user_id'] = user['Email'] # set session['user_id'] to logged in user
                 return redirect(url_for('home'))
-            flash(error,'warning')
+            else:
+                flash(error,'warning') # flash warning, and re-display login page
+    # GET: display login page
     return render_template('login.html', form=form)
 
 @bp.route('/logout')
 def logout():
+    close_db()
     session.clear()
     return redirect(url_for('home'))

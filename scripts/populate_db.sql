@@ -1,7 +1,8 @@
 INSERT INTO USER VALUES
 	("stephanedorotich@gmail.com", "pbkdf2:sha256:150000$d2tHEpTO$da4ab345d9aa6d7d3ba10b1aa346a75c37732fc349d704d2874e82eee737518f", "Stephane", "Dorotich", "1994-03-26", "Not an address", "Cochrane", "Alberta", "H0H 0H0"),
 	("navjotsk99@gmail.com", "pbkdf2:sha256:150000$JiPTTtm7$f00d6741926e46081d90b3bd29e7e6b5d95c6413274fbda86368ee0320978211", "Navjot", "Singh", "2021-03-18", "Not an address", "Calgary", "Alberta", "H0H 0H0"),
-	("madhuselvaraj24@gmail.com", "pbkdf2:sha256:150000$GQz0JnSA$32a66875998105360cbe47d92560a0886ba8351f536eaf906792eb57548c301e", "Madhu", "Selvaraj", "2021-03-18", "Not an address", "Calgary", "Alberta", "H0H 0H0");
+	("madhuselvaraj24@gmail.com", "pbkdf2:sha256:150000$GQz0JnSA$32a66875998105360cbe47d92560a0886ba8351f536eaf906792eb57548c301e", "Madhu", "Selvaraj", "2021-03-18", "Not an address", "Calgary", "Alberta", "H0H 0H0"),
+	("test", "pbkdf2:sha256:150000$yokhQIwq$99bd70d0bc5c7ecceaca9238c20f1b78938149c4ffd18bbccacc274816aeec13", "test", "test", "2021-04-07", "test", "test", "test", "test");
 
 INSERT INTO PHONE VALUES
 	("stephanedorotich@gmail.com", "403-444-9910"),
@@ -35,11 +36,12 @@ INSERT INTO ITEM VALUES
 INSERT INTO ITEM_BLACKOUT VALUES
 	("Shogun, James Clavell", "stephanedorotich@gmail.com", "2021-03-01", "2021-03-31");
 
-INSERT INTO RENTAL VALUES
-	(0, "madhuselvaraj24@gmail.com", "stephanedorotich@gmail.com", "Fundamentals of Database Systems, Elmasri and Navathe", "2021-03-01", 14, "10:30", "10:30", "complete", 0, "0"),
-	(1, "navjotsk99@gmail.com", "stephanedorotich@gmail.com", "Fundamentals of Database Systems, Elmasri and Navathe", "2021-03-25", 14, "13:45", "20:00", "pending", 0, "0");
+INSERT INTO RENTAL (Renter_email, Owner_email, Item_title, Start_date, Duration, Pick_up_time, Drop_off_time, Type, Rating, Review) VALUES
+	("madhuselvaraj24@gmail.com", "stephanedorotich@gmail.com", "Fundamentals of Database Systems, Elmasri and Navathe", "2021-03-01", 14, "10:30", "10:30", "complete", NULL, NULL),
+	("navjotsk99@gmail.com", "stephanedorotich@gmail.com", "Fundamentals of Database Systems, Elmasri and Navathe", "2021-03-25", 14, "13:45", "20:00", "pending", NULL, NULL);
 
 INSERT INTO INTERESTED_IN VALUES
 	("stephanedorotich@gmail.com", "Historical fiction"),
 	("stephanedorotich@gmail.com", "Music"),
 	("stephanedorotich@gmail.com", "Non-fiction");
+
