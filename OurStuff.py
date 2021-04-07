@@ -32,6 +32,9 @@ def home():
 # register for account
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    if (loggedInEmail is not None):
+        flash('You are already logged in', 'info')
+        return redirect(url_for('profile'))
     form = registerForm()
     if form.validate_on_submit():
         con = sqlite3.connect(db)
@@ -54,13 +57,15 @@ def register():
 #login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    global loggedInEmail
+    global loggedInPassword
+    if (loggedInEmail is not None):
+        flash('You are already logged in', 'info')
+        return redirect(url_for('profile'))
+
     form = LoginForm()
     if form.validate_on_submit():
         #look for user in db with matching email + password
-        global loggedInEmail
-        global loggedInPassword
-        if (loggedInEmail is not None):
-            flash('Another account is already logged in', 'error')
         con = sqlite3.connect(db)
         cur = con.cursor()
         user = cur.execute('SELECT * FROM USER WHERE Email=? AND Password=?', (form.email.data, form.password.data,)).fetchone()
@@ -76,6 +81,14 @@ def login():
 
     return render_template('login.html', form=form)
 
+#logout
+@app.route('/logout')
+def logout():
+    global loggedInEmail
+    global loggedInPassword
+    loggedInEmail = None
+    loggedInPassword = None
+    return redirect(url_for('home'))
 
 # view all items
 @app.route('/browse/all', methods=['GET', 'POST'])
@@ -159,14 +172,18 @@ def rent_item(title):
 @app.route('/profile', methods=['GET'])
 def profile():
     # TODO: once flask-login is setup, first check if current_user is logged in (redirect to login if not)
+    if loggedInEmail is None:
+        flash('Please login first.', 'danger')
+        return redirect(url_for('login'))
+
     con = sqlite3.connect(db)
     cur = con.cursor()
-    user = cur.execute('SELECT * FROM USER WHERE Email=?', ('madhuselvaraj24@gmail.com',)).fetchone() #just temporary, once flask-login is setup don't need to query DB
-    owner_rentals = cur.execute('SELECT COUNT (*) FROM RENTAL WHERE Owner_email=?', ('madhuselvaraj24@gmail.com',)) #after flask-login is setup, check if owner_email = current_user.email
+    user = cur.execute('SELECT * FROM USER WHERE Email=?', (loggedInEmail,)).fetchone()
+    owner_rentals = cur.execute('SELECT COUNT (*) FROM RENTAL WHERE Owner_email=?', (loggedInEmail,))
     num_owner_rentals = cur.fetchone()[0]
-    renter_rentals = cur.execute('SELECT COUNT (*) FROM RENTAL WHERE Renter_email=?', ('madhuselvaraj24@gmail.com',))
+    renter_rentals = cur.execute('SELECT COUNT (*) FROM RENTAL WHERE Renter_email=?', (loggedInEmail,))
     num_renter_rentals = cur.fetchone()[0]
-    interests = cur.execute('SELECT * FROM INTERESTED_IN WHERE User_email=?', ('madhuselvaraj24@gmail.com',)).fetchall()
+    interests = cur.execute('SELECT * FROM INTERESTED_IN WHERE User_email=?', (loggedInEmail,)).fetchall()
     all_interests = ""
     if interests:
         for i in interests:
@@ -180,11 +197,11 @@ def editProfile():
     form = UserInfoForm()
     con = sqlite3.connect(db)
     cur = con.cursor()
-    user = cur.execute('SELECT * FROM USER WHERE Email=?', ('madhuselvaraj24@gmail.com',)).fetchone() #temporary until flask-login is setup
+    user = cur.execute('SELECT * FROM USER WHERE Email=?', (loggedInEmail,)).fetchone()
 
     # TODO: once flask-login is setup, change everything to current_user
     if form.validate_on_submit():
-        cur.execute('UPDATE USER SET Email=?, Password=?, First_name=?, Last_name=?, Dob=?, Street_address =?, City=?, Province=?, Postal_code=? WHERE Email=?',(form.email.data, form.password.data, form.fname.data, form.lname.data, form.dob.data, form.street.data, form.city.data, form.province.data, form.postalCode.data, 'madhuselvaraj24@gmail.com',))
+        cur.execute('UPDATE USER SET Email=?, Password=?, First_name=?, Last_name=?, Dob=?, Street_address =?, City=?, Province=?, Postal_code=? WHERE Email=?',(form.email.data, form.password.data, form.fname.data, form.lname.data, form.dob.data, form.street.data, form.city.data, form.province.data, form.postalCode.data, loggedInEmail,))
         con.commit()
         cur.close()
         return redirect(url_for('profile'))
@@ -207,51 +224,63 @@ def renterTransactions():
     con = sqlite3.connect(db)
     cur = con.cursor()
     #once flask-login is setup check for current_user.email instead
-    pending = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', ('madhuselvaraj24@gmail.com','pending',)).fetchall() #owner hasn't approved yet
-    booked = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', ('madhuselvaraj24@gmail.com','booked',)).fetchall() #active rental
-    complete = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', ('madhuselvaraj24@gmail.com','complete',)).fetchall() #completed rental (item returned)
-    if pending and booked and complete:
-        return render_template('renterTransactions.html', pending = pending, booked = booked, complete = complete)
-    elif pending and booked:
-        return render_template('renterTransactions.html', pending = pending, booked = booked)
-    elif pending and complete:
-        return render_template('renterTransactions.html', pending = pending, complete = complete)
-    elif booked and complete:
-        return render_template('renterTransactions.html', booked = booked, complete = complete)
-    elif pending:
-        return render_template('renterTransactions.html', pending = pending)
-    elif booked:
-        return render_template('renterTransactions.html', booked = booked)
-    elif complete:
-        return render_template('renterTransactions.html', complete = complete)
-    else:
-        return render_template('renterTransactions.html')
+    if request.method=='GET':
+        pending = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (loggedInEmail,'pending',)).fetchall() #owner hasn't approved yet
+        booked = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (loggedInEmail,'booked',)).fetchall() #active rental
+        complete = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (loggedInEmail,'complete',)).fetchall() #completed rental (item returned)
+        if pending and booked and complete:
+            return render_template('renterTransactions.html', pending = pending, booked = booked, complete = complete)
+        elif pending and booked:
+            return render_template('renterTransactions.html', pending = pending, booked = booked)
+        elif pending and complete:
+            return render_template('renterTransactions.html', pending = pending, complete = complete)
+        elif booked and complete:
+            return render_template('renterTransactions.html', booked = booked, complete = complete)
+        elif pending:
+            return render_template('renterTransactions.html', pending = pending)
+        elif booked:
+            return render_template('renterTransactions.html', booked = booked)
+        elif complete:
+            return render_template('renterTransactions.html', complete = complete)
+        else:
+            return render_template('renterTransactions.html')
+
 
 # view all owner transactions
-@app.route('/profile/owner/transactions/all', methods = ['GET'])
+@app.route('/profile/owner/transactions/all', methods = ['GET', 'POST'])
 def ownerTransactions():
     con = sqlite3.connect(db)
     cur = con.cursor()
-    #once flask-login is setup check for current_user.email instead
-    pending = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', ('madhuselvaraj24@gmail.com','pending',)).fetchall() #need to approve
-    booked = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', ('madhuselvaraj24@gmail.com','booked',)).fetchall() #active rental
-    complete = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', ('madhuselvaraj24@gmail.com','complete',)).fetchall() #item returned
-    if pending and booked and complete:
-        return render_template('ownerTransactions.html', pending = pending, booked = booked, complete = complete)
-    elif pending and booked:
-        return render_template('ownerTransactions.html', pending = pending, booked = booked)
-    elif pending and complete:
-        return render_template('ownerTransactions.html', pending = pending, complete = complete)
-    elif booked and complete:
-        return render_template('ownerTransactions.html', booked = booked, complete = complete)
-    elif pending:
-        return render_template('ownerTransactions.html', pending = pending)
-    elif booked:
-        return render_template('ownerTransactions.html', booked = booked)
-    elif complete:
-        return render_template('ownerTransactions.html', complete = complete)
-    else:
-        return render_template('ownerTransactions.html')
+    pending = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (loggedInEmail,'pending',)).fetchall() #need to approve
+    booked = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (loggedInEmail,'booked',)).fetchall() #active rental
+    complete = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (loggedInEmail,'complete',)).fetchall() #item returned
+
+    if request.method=='GET':
+        if pending and booked and complete:
+            return render_template('ownerTransactions.html', pending = pending, booked = booked, complete = complete)
+        elif pending and booked:
+            return render_template('ownerTransactions.html', pending = pending, booked = booked)
+        elif pending and complete:
+            return render_template('ownerTransactions.html', pending = pending, complete = complete)
+        elif booked and complete:
+            return render_template('ownerTransactions.html', booked = booked, complete = complete)
+        elif pending:
+            return render_template('ownerTransactions.html', pending = pending)
+        elif booked:
+            return render_template('ownerTransactions.html', booked = booked)
+        elif complete:
+            return render_template('ownerTransactions.html', complete = complete)
+        else:
+            return render_template('ownerTransactions.html')
+    elif request.method == 'POST':
+        if pending and request.form['approveBtn'] is not None:
+            cur.execute('UPDATE RENTAL SET Type=? WHERE tID=?',('booked',request.form['approveBtn']))
+        elif booked and request.form['completeBtn'] is not None:
+            cur.execute('UPDATE RENTAL SET Type=? WHERE tID=?',('complete',request.form['completeBtn']))
+        con.commit()
+        cur.close()
+        return redirect(url_for('ownerTransactions'))
+
 
 # view all owner's items, can choose to black out dates or delete
 @app.route('/user/<username>/owner/items/all', methods = ['GET', 'POST', 'DELETE'])
