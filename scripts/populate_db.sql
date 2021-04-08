@@ -10,7 +10,7 @@ INSERT INTO PHONE VALUES
 	("navjotsk99@gmail.com", "999-999-9999");
 
 INSERT INTO ADMIN VALUES
-	(12345, "securePassword");
+	("admin", "pbkdf2:sha256:150000$9GQBn3xy$a18f87fb35b87d2339ba0139837e2ff06713875080d1efefbe622013fe1db74e");
 
 INSERT INTO REPORT VALUES
 	("navjotsk99@gmail.com", "stephanedorotich@gmail.com", NULL, "His hair is too long", "2021-03-04", "2021-03-21"),
