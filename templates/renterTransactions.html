@@ -82,7 +82,7 @@
                     {% for row in complete %}
                       <tr>
                         <td>{{row[3]}}</td>
-                        {% if row[9] != 0%}
+                        {% if row[9] != None%}
                           <td>{{row[9]}}</td>
                         {% else %}
                           <td>
@@ -97,7 +97,7 @@
                                     </button>
                                   </div>
                                   <div class="modal-body">
-                                    <form method="POST" action="{{ url_for('renterTransactions',r=1)}}">
+                                    <form method="POST" action="{{ url_for('renterTransactions', rate=1)}}">
                                         <label for="message-text" class="col-form-label">Rating (1-5):</label>
                                         <input type="text" class="form-control" name="rating">
                                         <button type="submit" class="btn btn-primary float-right" name="ratingBtn" value="{{row[0]}}">Save</button> <!--fix button placement later-->
@@ -108,7 +108,7 @@
                             </div>
                           </td>
                         {% endif %}
-                        {% if row[10] != "0"%}
+                        {% if row[10] != None%}
                           <td>{{row[10]}}</td>
                         {% else %}
                           <td>
@@ -123,7 +123,7 @@
                                     </button>
                                   </div>
                                   <div class="modal-body">
-                                    <form method="POST" action="{{ url_for('renterTransactions')}}">
+                                    <form method="POST" action="{{ url_for('renterTransactions', rate=0)}}">
                                         <label for="message-text" class="col-form-label">Write your review:</label>
                                         <textarea class="form-control" id="message-text" name="review"></textarea>
                                         <button type="submit" class="btn btn-primary float-right" name="reviewBtn" value="{{row[0]}}">Save</button> <!--fix button placement later-->
