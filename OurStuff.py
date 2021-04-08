@@ -6,6 +6,7 @@ from forms import FilterForm
 from forms import RentalRequestForm
 import auth
 from auth import login_required, get_db
+import admin
 
 # create the app
 # TODO: make a create_app function
@@ -13,6 +14,7 @@ app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 app.config['SECRET_KEY'] = 'a722544382860619226245081983ab8f' #needed to use flask_wtforms
 app.register_blueprint(auth.bp)
+app.register_blueprint(admin.bp)
 
 # home page
 @app.route('/', methods=['GET'])
