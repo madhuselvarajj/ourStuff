@@ -1,7 +1,8 @@
 import sqlite3, flask
 from flask import jsonify, render_template, redirect, url_for, request, flash, g
 from forms import LoginForm, UserInfoForm
-from datetime import datetime
+from datetime import datetime, date
+import datetime
 from forms import FilterForm
 from forms import RentalRequestForm
 from forms import reportForm
@@ -95,7 +96,7 @@ def rent_item(title):
 
 # view profile (where user can view their transactions and items)
 @app.route('/profile', methods=['GET'])
-@login_required
+
 def profile():
     db = get_db()
     cur = db.cursor()
@@ -115,20 +116,20 @@ def profile():
 
 
 @app.route('/profile/edit', methods=['GET', 'POST'])
+@login_required
 def editProfile():
     form = UserInfoForm()
     db = get_db()
     cur = db.cursor()
-    user = cur.execute('SELECT * FROM USER WHERE Email=?', (loggedInEmail,)).fetchone()
+    user = cur.execute('SELECT * FROM USER WHERE Email=?', (g.user['Email'],)).fetchone()
 
     if form.validate_on_submit():
-        cur.execute('UPDATE USER SET Email=?, Password=?, First_name=?, Last_name=?, Dob=?, Street_address =?, City=?, Province=?, Postal_code=? WHERE Email=?',(form.email.data, form.password.data, form.fname.data, form.lname.data, form.dob.data, form.street.data, form.city.data, form.province.data, form.postalCode.data, loggedInEmail,))
+        cur.execute('UPDATE USER SET Email=?, First_name=?, Last_name=?, Dob=?, Street_address =?, City=?, Province=?, Postal_code=? WHERE Email=?',(form.email.data, form.fname.data, form.lname.data, form.dob.data, form.street.data, form.city.data, form.province.data, form.postalCode.data, g.user['Email'],))
         db.commit()
         cur.close()
         return redirect(url_for('profile'))
     elif request.method=='GET': #populates the form with the current_user's information
         form.email.data = user[0]
-        form.password.data = user[1]
         form.fname.data = user[2]
         form.lname.data = user[3]
         form.dob.data = datetime.strptime(user[4], '%Y-%m-%d')
@@ -141,26 +142,35 @@ def editProfile():
 
 # view all renter transactions
 @app.route('/profile/renter/transactions/all', methods = ['GET', 'POST'])
+@login_required
 def renterTransactions():
     db = get_db()
     cur = db.cursor()
     pending = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (g.user['Email'],'pending',)).fetchall() #owner hasn't approved yet
     booked = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (g.user['Email'],'booked',)).fetchall() #active rental
+    days_remaining=[]
+    for r in booked:
+        start = datetime.datetime.strptime(r[4], '%Y-%m-%d').date()
+        today = date.today()
+        diff = today - start
+        remaining = r[5] - diff.days
+        days_remaining.append(remaining)
     complete = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (g.user['Email'],'complete',)).fetchall() #completed rental (item returned)
 
     if request.method == 'GET':
+        #TODO: move this to a seperate function because ownerTransactions does a similar thing
         if pending and booked and complete:
-            return render_template('renterTransactions.html', pending = pending, booked = booked, complete = complete)
+            return render_template('renterTransactions.html', pending = pending, booked = booked, days_remaining = days_remaining, complete = complete, zip=zip)
         elif pending and booked:
-            return render_template('renterTransactions.html', pending = pending, booked = booked)
+            return render_template('renterTransactions.html', pending = pending, booked = booked, days_remaining = days_remaining, zip=zip)
         elif pending and complete:
             return render_template('renterTransactions.html', pending = pending, complete = complete)
         elif booked and complete:
-            return render_template('renterTransactions.html', booked = booked, complete = complete)
+            return render_template('renterTransactions.html', booked = booked, days_remaining = days_remaining, complete = complete, zip=zip)
         elif pending:
             return render_template('renterTransactions.html', pending = pending)
         elif booked:
-            return render_template('renterTransactions.html', booked = booked)
+            return render_template('renterTransactions.html', booked = booked, days_remaining = days_remaining, zip=zip)
         elif complete:
             return render_template('renterTransactions.html', complete = complete)
         else:
@@ -172,8 +182,7 @@ def renterTransactions():
             cur.execute('UPDATE RENTAL SET Rating=? WHERE tID=?',(int(request.form['rating']),request.form['ratingBtn']))
         elif complete and rate == '0' and request.form['reviewBtn'] is not None:
             cur.execute('UPDATE RENTAL SET Review=? WHERE tID=?',(request.form['review'],request.form['reviewBtn']))
-        #elif complete and request.form['ReportBtn'] is not None:
-           # return redirect(url_for('report', ownerEmail = request.form['ReportBtn']))
+            
         db.commit()
         cur.close()
         return redirect(url_for('renterTransactions'))
@@ -195,30 +204,40 @@ def report(ownerEmail):
 
 # view all owner transactions
 @app.route('/profile/owner/transactions/all', methods = ['GET', 'POST'])
+@login_required
 def ownerTransactions():
     db = get_db()
     cur = db.cursor()
     pending = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (g.user['Email'],'pending',)).fetchall() #need to approve
     booked = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (g.user['Email'],'booked',)).fetchall() #active rental
+    days_remaining=[]
+    for r in booked:
+        start = datetime.datetime.strptime(r[4], '%Y-%m-%d').date()
+        today = date.today()
+        diff = today - start
+        remaining = r[5] - diff.days
+        days_remaining.append(remaining)
     complete = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (g.user['Email'],'complete',)).fetchall() #item returned
 
     if request.method=='GET':
+        #TODO: move this to a seperate function because renterTransactions does a similar thing
         if pending and booked and complete:
-            return render_template('ownerTransactions.html', pending = pending, booked = booked, complete = complete)
+            return render_template('ownerTransactions.html', pending = pending, booked = booked, days_remaining = days_remaining, complete = complete, zip=zip)
         elif pending and booked:
-            return render_template('ownerTransactions.html', pending = pending, booked = booked)
+            return render_template('ownerTransactions.html', pending = pending, booked = booked, days_remaining = days_remaining, zip=zip)
         elif pending and complete:
             return render_template('ownerTransactions.html', pending = pending, complete = complete)
         elif booked and complete:
-            return render_template('ownerTransactions.html', booked = booked, complete = complete)
+            return render_template('ownerTransactions.html', booked = booked, complete = complete, days_remaining = days_remaining, zip=zip)
         elif pending:
             return render_template('ownerTransactions.html', pending = pending)
         elif booked:
-            return render_template('ownerTransactions.html', booked = booked)
+            return render_template('ownerTransactions.html', booked = booked, days_remaining = days_remaining, zip=zip)
         elif complete:
             return render_template('ownerTransactions.html', complete = complete)
         else:
             return render_template('ownerTransactions.html')
+
     elif request.method == 'POST':
         if pending and request.form['approveBtn'] is not None:
             cur.execute('UPDATE RENTAL SET Type=? WHERE tID=?',('booked',request.form['approveBtn']))
@@ -231,6 +250,7 @@ def ownerTransactions():
 
 # view all owner's items, can choose to black out dates or delete
 @app.route('/user/<username>/owner/items/all', methods = ['GET', 'POST', 'DELETE'])
+@login_required
 def owner_items(username):
     return render_template()
     if request.method == "GET" :

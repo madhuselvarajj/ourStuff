@@ -3,33 +3,34 @@
         <div class="row">
             <div class="col">
             </div>
-            <div class="col-6">
-              <h1>Transaction History</h1>
+            <div class="col-8">
+              <h1 class="transaction-heading">Transaction History</h1>
               <h8>For items that have been rented out</h8>
-              <br>
-              <br>
-              <h6>Pending Transactions (Requires Approval)</h6>
+
+              <h6>Pending Transactions (Requires Approval)</h6><!--Pending Transactions Table-->
               {% if pending%}
-                <table class="table table-sm">
+                <table class="table table-sm transaction-table" width="100%">
                   <thead class="thead-light">
                     <tr>
-                      <th scope="col">Item</th>
-                      <th scope="col">Duration</th>
-                      <th scope="col">Pick Up Time</th>
-                      <th scope="col">Drop Off Time</th>
-                      <th scope="col">Renter's Email</th>
+                      <th scope="col" style="width:30%" >Item</th>
+                      <th scope="col" style="width:11%">Start Date</th>
+                      <th scope="col" style="width:11%">Duration</th>
+                      <th scope="col" style="width:11%">Pick Up Time</th>
+                      <th scope="col" style="width:11%">Drop Off Time</th>
+                      <th scope="col" style="width:25%">Renters's Email</th>
                     </tr>
                   </thead>
                   <tbody>
                     {% for row in pending %}
                       <tr>
-                        <td>{{row[3]}}</td>
-                        <td>{{row[5]}} days</td>
-                        <td>{{row[6]}}</td>
-                        <td>{{row[7]}}</td>
-                        <td>{{row[1]}}
+                        <td>{{row[3]}}</td> <!--item name-->
+                        <td>{{row[4]}}</td> <!--start date-->
+                        <td>{{row[5]}} days</td> <!--duration-->
+                        <td>{{row[6]}}</td> <!--pick up time-->
+                        <td>{{row[7]}}</td> <!--drop off time-->
+                        <td>{{row[1]}} <!--renter's email with approve button-->
                           <form method="POST" action="">
-                            <button name="approveBtn" type="submit" class="btn btn-info btn-sm btn float-right" value={{row[0]}}>Approve</button
+                            <button name="approveBtn" type="submit" class="btn btn-outline-info btn-sm btn float-left" value={{row[0]}}>Approve</button
                           </form>
                         </td>
                       </tr>
@@ -39,30 +40,31 @@
               {% else %}
               <h8>None at the moment</h8>
               {% endif %}
-              <br>
-              <br>
-              <h6>Booked Transactions</h6>
+
+              <h6>Booked Transactions</h6><!--Booked Transactions Table-->
               {% if booked%}
-                <table class="table table-sm">
+                <table class="table table-sm transaction-table" width="100%">
                   <thead class="thead-light">
                     <tr>
-                      <th scope="col">Item</th>
-                      <th scope="col">Duration</th>
-                      <th scope="col">Pick Up Time</th>
-                      <th scope="col">Drop Off Time</th>
-                      <th scope="col">Renter's Email</th>
+                      <th scope="col" style="width:30%">Item</th>
+                      <th scope="col" style="width:11%">Start Date</th>
+                      <th scope="col" style="width:11%">Days Remaining</th>
+                      <th scope="col" style="width:11%">Pick Up Time</th>
+                      <th scope="col" style="width:11%">Drop Off Time</th>
+                      <th scope="col" style="width:25%">Renters's Email</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {% for row in booked %}
+                    {% for (row, i) in zip(booked,days_remaining) %}
                       <tr>
-                        <td>{{row[3]}}</td>
-                        <td>{{row[5]}} days</td>
-                        <td>{{row[6]}}</td>
-                        <td>{{row[7]}}</td>
-                        <td>{{row[1]}}
+                        <td>{{row[3]}}</td> <!--item name-->
+                        <td>{{row[4]}}</td> <!--start date-->
+                        <td>{{i}} days</td> <!--days remaining-->
+                        <td>{{row[6]}}</td> <!--pick up time-->
+                        <td>{{row[7]}}</td> <!--drop off time-->
+                        <td>{{row[1]}} <!--renter's email with complete button-->
                           <form method="POST" action="">
-                            <button name="completeBtn" type="submit" class="btn btn-info btn-sm btn float-right" value={{row[0]}}>Mark as Complete</button>
+                            <button name="completeBtn" type="submit" class="btn btn-outline-info btn-sm btn float-left" value={{row[0]}}>Mark as Complete</button>
                           </form>
                         </td>
                       </tr>
@@ -72,30 +74,25 @@
               {% else %}
               <h8>None at the moment</h8>
               {% endif %}
-              <br>
-              <br>
-              <h6>Completed Transactions</h6>
+
+              <h6>Completed Transactions</h6> <!--Completed Transactions Table-->
               {% if complete%}
-                <table class="table table-sm">
+                <table class="table table-sm transaction-table" width="100%">
                   <thead class="thead-light">
                     <tr>
-                      <th scope="col">Item</th>
-                      <th scope="col">Renter's Email</th>
-                      <th scope="col">Rating</th>
-                      <th scope="col">Review</th>
+                      <th scope="col" style="width:30%">Item</th>
+                      <th scope="col" style="width:25%">Renter's Email</th>
+                      <th scope="col" style="width:15%">Rating</th>
+                      <th scope="col" style="width:30%">Review</th>
                     </tr>
                   </thead>
                   <tbody>
                     {% for row in complete %}
                       <tr>
-                        <td>{{row[3]}}</td>
-                        <td>{{row[1]}}</td>
-                        <td>{{row[9]}}</td>
-                        {% if row[10] != "0"%}
-                          <td>{{row[10]}}</td>
-                        {% else %}
-                          <td>None</td>
-                        {% endif %}
+                        <td>{{row[3]}}</td> <!--item name-->
+                        <td>{{row[1]}}</td> <!--renter's email-->
+                        <td>{{row[9]}}</td> <!--rating-->
+                        <td>{{row[10]}}</td> <!--review-->
                       </tr>
                     {% endfor %}
                   </tbody>

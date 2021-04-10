@@ -44,4 +44,3 @@ INSERT INTO INTERESTED_IN VALUES
 	("stephanedorotich@gmail.com", "Historical fiction"),
 	("stephanedorotich@gmail.com", "Music"),
 	("stephanedorotich@gmail.com", "Non-fiction");
-
