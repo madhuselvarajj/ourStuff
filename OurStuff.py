@@ -171,8 +171,25 @@ def renterTransactions():
             cur.execute('UPDATE RENTAL SET Rating=? WHERE tID=?',(int(request.form['rating']),request.form['ratingBtn']))
         elif complete and rate == '0' and request.form['reviewBtn'] is not None:
             cur.execute('UPDATE RENTAL SET Review=? WHERE tID=?',(request.form['review'],request.form['reviewBtn']))
+        #elif complete and request.form['ReportBtn'] is not None:
+           # return redirect(url_for('report', ownerEmail = request.form['ReportBtn']))
         db.commit()
         cur.close()
+        return redirect(url_for('renterTransactions'))
+
+#request a report on anothert user where the transaction was with tID
+@app.route('/profile/renter/report/<ownerEmail>', methods = ['GET', 'POST'])
+def report(ownerEmail):
+    form = reportForm()
+    if request.method == 'GET':
+        return render_template('report.html', form=form)
+    elif request.method == 'POST':
+        description = form.description.data
+        date = form.dateOfOffense.data
+        todaysDate = datetime.date(datetime.now())
+        db = get_db()
+        cur = db.cursor()
+        cur.execute("INSERT INTO REPORT (User_email, Reported_user_email, Admin_ID, Offense_description, Date_of_offense, Date_of_report) VALUES (?,?,?,?,?,?)", (g.user['Email'], ownerEmail, None, description, date, todaysDate))
         return redirect(url_for('renterTransactions'))
 
 # view all owner transactions
