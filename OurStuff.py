@@ -4,6 +4,7 @@ from forms import LoginForm, UserInfoForm
 from datetime import datetime
 from forms import FilterForm
 from forms import RentalRequestForm
+from forms import reportForm
 import auth
 from auth import login_required, get_db
 import admin
