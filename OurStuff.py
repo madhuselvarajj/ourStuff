@@ -94,7 +94,7 @@ def rent_item(title):
 
 # view profile (where user can view their transactions and items)
 @app.route('/profile', methods=['GET'])
-@login_required
+
 def profile():
     db = get_db()
     cur = db.cursor()
@@ -114,20 +114,20 @@ def profile():
 
 
 @app.route('/profile/edit', methods=['GET', 'POST'])
+@login_required
 def editProfile():
     form = UserInfoForm()
     db = get_db()
     cur = db.cursor()
-    user = cur.execute('SELECT * FROM USER WHERE Email=?', (loggedInEmail,)).fetchone()
+    user = cur.execute('SELECT * FROM USER WHERE Email=?', (g.user['Email'],)).fetchone()
 
     if form.validate_on_submit():
-        cur.execute('UPDATE USER SET Email=?, Password=?, First_name=?, Last_name=?, Dob=?, Street_address =?, City=?, Province=?, Postal_code=? WHERE Email=?',(form.email.data, form.password.data, form.fname.data, form.lname.data, form.dob.data, form.street.data, form.city.data, form.province.data, form.postalCode.data, loggedInEmail,))
+        cur.execute('UPDATE USER SET Email=?, First_name=?, Last_name=?, Dob=?, Street_address =?, City=?, Province=?, Postal_code=? WHERE Email=?',(form.email.data, form.fname.data, form.lname.data, form.dob.data, form.street.data, form.city.data, form.province.data, form.postalCode.data, g.user['Email'],))
         db.commit()
         cur.close()
         return redirect(url_for('profile'))
     elif request.method=='GET': #populates the form with the current_user's information
         form.email.data = user[0]
-        form.password.data = user[1]
         form.fname.data = user[2]
         form.lname.data = user[3]
         form.dob.data = datetime.strptime(user[4], '%Y-%m-%d')
@@ -140,6 +140,7 @@ def editProfile():
 
 # view all renter transactions
 @app.route('/profile/renter/transactions/all', methods = ['GET', 'POST'])
+@login_required
 def renterTransactions():
     db = get_db()
     cur = db.cursor()
@@ -177,6 +178,7 @@ def renterTransactions():
 
 # view all owner transactions
 @app.route('/profile/owner/transactions/all', methods = ['GET', 'POST'])
+@login_required
 def ownerTransactions():
     db = get_db()
     cur = db.cursor()
@@ -213,6 +215,7 @@ def ownerTransactions():
 
 # view all owner's items, can choose to black out dates or delete
 @app.route('/user/<username>/owner/items/all', methods = ['GET', 'POST', 'DELETE'])
+@login_required
 def owner_items(username):
     return render_template()
     if request.method == "GET" :

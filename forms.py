@@ -22,7 +22,6 @@ class RegisterForm(FlaskForm):
 
 class UserInfoForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()], widget=PasswordInput(hide_value=False))
     fname = StringField('First Name', validators=[DataRequired()])
     lname = StringField('Last Name', validators=[DataRequired()])
     dob = DateField('Date', validators=[DataRequired()], format='%Y-%m-%d')
@@ -38,7 +37,7 @@ class FilterForm(FlaskForm):
     category = StringField('enter category to filter by', default='none')
     maxPrice = StringField('enter maximum price to filer by', default='none')
     submit = SubmitField('Filter')
-    
+
 class RentalRequestForm(FlaskForm):
     startDate = DateField('starting date', validators=[DataRequired()])
     duration = IntegerField('duration', validators=[DataRequired()])
