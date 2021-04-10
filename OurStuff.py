@@ -1,7 +1,8 @@
 import sqlite3, flask
 from flask import jsonify, render_template, redirect, url_for, request, flash, g
 from forms import LoginForm, UserInfoForm
-from datetime import datetime
+from datetime import datetime, date
+import datetime
 from forms import FilterForm
 from forms import RentalRequestForm
 from forms import reportForm
@@ -147,21 +148,29 @@ def renterTransactions():
     cur = db.cursor()
     pending = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (g.user['Email'],'pending',)).fetchall() #owner hasn't approved yet
     booked = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (g.user['Email'],'booked',)).fetchall() #active rental
+    days_remaining=[]
+    for r in booked:
+        start = datetime.datetime.strptime(r[4], '%Y-%m-%d').date()
+        today = date.today()
+        diff = today - start
+        remaining = r[5] - diff.days
+        days_remaining.append(remaining)
     complete = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (g.user['Email'],'complete',)).fetchall() #completed rental (item returned)
 
     if request.method == 'GET':
+        #TODO: move this to a seperate function because ownerTransactions does a similar thing
         if pending and booked and complete:
-            return render_template('renterTransactions.html', pending = pending, booked = booked, complete = complete)
+            return render_template('renterTransactions.html', pending = pending, booked = booked, days_remaining = days_remaining, complete = complete, zip=zip)
         elif pending and booked:
-            return render_template('renterTransactions.html', pending = pending, booked = booked)
+            return render_template('renterTransactions.html', pending = pending, booked = booked, days_remaining = days_remaining, zip=zip)
         elif pending and complete:
             return render_template('renterTransactions.html', pending = pending, complete = complete)
         elif booked and complete:
-            return render_template('renterTransactions.html', booked = booked, complete = complete)
+            return render_template('renterTransactions.html', booked = booked, days_remaining = days_remaining, complete = complete, zip=zip)
         elif pending:
             return render_template('renterTransactions.html', pending = pending)
         elif booked:
-            return render_template('renterTransactions.html', booked = booked)
+            return render_template('renterTransactions.html', booked = booked, days_remaining = days_remaining, zip=zip)
         elif complete:
             return render_template('renterTransactions.html', complete = complete)
         else:
@@ -173,8 +182,7 @@ def renterTransactions():
             cur.execute('UPDATE RENTAL SET Rating=? WHERE tID=?',(int(request.form['rating']),request.form['ratingBtn']))
         elif complete and rate == '0' and request.form['reviewBtn'] is not None:
             cur.execute('UPDATE RENTAL SET Review=? WHERE tID=?',(request.form['review'],request.form['reviewBtn']))
-        #elif complete and request.form['ReportBtn'] is not None:
-           # return redirect(url_for('report', ownerEmail = request.form['ReportBtn']))
+            
         db.commit()
         cur.close()
         return redirect(url_for('renterTransactions'))
@@ -202,25 +210,34 @@ def ownerTransactions():
     cur = db.cursor()
     pending = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (g.user['Email'],'pending',)).fetchall() #need to approve
     booked = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (g.user['Email'],'booked',)).fetchall() #active rental
+    days_remaining=[]
+    for r in booked:
+        start = datetime.datetime.strptime(r[4], '%Y-%m-%d').date()
+        today = date.today()
+        diff = today - start
+        remaining = r[5] - diff.days
+        days_remaining.append(remaining)
     complete = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (g.user['Email'],'complete',)).fetchall() #item returned
 
     if request.method=='GET':
+        #TODO: move this to a seperate function because renterTransactions does a similar thing
         if pending and booked and complete:
-            return render_template('ownerTransactions.html', pending = pending, booked = booked, complete = complete)
+            return render_template('ownerTransactions.html', pending = pending, booked = booked, days_remaining = days_remaining, complete = complete, zip=zip)
         elif pending and booked:
-            return render_template('ownerTransactions.html', pending = pending, booked = booked)
+            return render_template('ownerTransactions.html', pending = pending, booked = booked, days_remaining = days_remaining, zip=zip)
         elif pending and complete:
             return render_template('ownerTransactions.html', pending = pending, complete = complete)
         elif booked and complete:
-            return render_template('ownerTransactions.html', booked = booked, complete = complete)
+            return render_template('ownerTransactions.html', booked = booked, complete = complete, days_remaining = days_remaining, zip=zip)
         elif pending:
             return render_template('ownerTransactions.html', pending = pending)
         elif booked:
-            return render_template('ownerTransactions.html', booked = booked)
+            return render_template('ownerTransactions.html', booked = booked, days_remaining = days_remaining, zip=zip)
         elif complete:
             return render_template('ownerTransactions.html', complete = complete)
         else:
             return render_template('ownerTransactions.html')
+
     elif request.method == 'POST':
         if pending and request.form['approveBtn'] is not None:
             cur.execute('UPDATE RENTAL SET Type=? WHERE tID=?',('booked',request.form['approveBtn']))

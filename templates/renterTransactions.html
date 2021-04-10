@@ -3,31 +3,32 @@
         <div class="row">
             <div class="col">
             </div>
-            <div class="col-6">
-              <h1>Transaction History</h1>
+            <div class="col-8">
+              <h1 class="transaction-heading">Transaction History</h1>
               <h8>For items that you have rented</h8>
-              <br>
-              <br>
-              <h6>Pending Transactions (Requires Approval from Owner)</h6>
+
+              <h6>Pending Transactions (Requires Approval from Owner)</h6> <!--Pending Transactions Table-->
               {% if pending%}
-                <table class="table table-sm transaction-table">
+                <table class="table table-sm transaction-table" width="100%">
                   <thead class="thead-light">
                     <tr>
-                      <th scope="col">Item</th>
-                      <th scope="col">Duration</th>
-                      <th scope="col">Pick Up Time</th>
-                      <th scope="col">Drop Off Time</th>
-                      <th scope="col">Owners's Email</th>
+                      <th scope="col" style="width:30%" >Item</th>
+                      <th scope="col" style="width:25%">Owners's Email</th>
+                      <th scope="col" style="width:11%">Start Date</th>
+                      <th scope="col" style="width:11%">Duration</th>
+                      <th scope="col" style="width:11%">Pick Up Time</th>
+                      <th scope="col" style="width:11%">Drop Off Time</th>
                     </tr>
                   </thead>
                   <tbody>
                     {% for row in pending %}
                       <tr>
-                        <td>{{row[3]}}</td>
-                        <td>{{row[5]}} days</td>
-                        <td>{{row[6]}}</td>
-                        <td>{{row[7]}}</td>
-                        <td>{{row[2]}}</td>
+                        <td>{{row[3]}}</td> <!--item name-->
+                        <td>{{row[2]}}</td> <!--owner's email-->
+                        <td>{{row[4]}}</td> <!--start date-->
+                        <td>{{row[5]}} days</td> <!--duration-->
+                        <td>{{row[6]}}</td> <!--pick up time-->
+                        <td>{{row[7]}}</td> <!--Drop off time-->
                       </tr>
                     {% endfor %}
                   </tbody>
@@ -35,26 +36,29 @@
               {% else %}
               <h8>None at the moment</h8>
               {% endif %}
-              <h6>Ongoing Rentals</h6>
+
+              <h6>Ongoing Rentals</h6> <!--Booked Transactions Table-->
               {% if booked%}
-                <table class="table table-sm transaction-table">
+                <table class="table table-sm transaction-table" width="100%">
                   <thead class="thead-light">
                     <tr>
-                      <th scope="col">Item</th>
-                      <th scope="col">Duration</th>
-                      <th scope="col">Pick Up Time</th>
-                      <th scope="col">Drop Off Time</th>
-                      <th scope="col">Owners's Email</th>
+                      <th scope="col" style="width:30%">Item</th>
+                      <th scope="col" style="width:25%">Owners's Email</th>
+                      <th scope="col" style="width:11%">Start Date</th>
+                      <th scope="col" style="width:11%">Days Remaining</th>
+                      <th scope="col" style="width:11%">Pick Up Time</th>
+                      <th scope="col" style="width:11%">Drop Off Time</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {% for row in booked %}
+                    {% for (row, i) in zip(booked,days_remaining) %}
                       <tr>
-                        <td>{{row[3]}}</td>
-                        <td>{{row[5]}} days</td>
-                        <td>{{row[6]}}</td>
-                        <td>{{row[7]}}</td>
-                        <td>{{row[2]}}</td>
+                        <td>{{row[3]}}</td> <!--item name-->
+                        <td>{{row[2]}}</td> <!--owner's email-->
+                        <td>{{row[4]}}</td> <!--start date-->
+                        <td>{{i}} days</td> <!--days remaining in rental-->
+                        <td>{{row[6]}}</td> <!--pick up time-->
+                        <td>{{row[7]}}</td> <!--Drop off time-->
                       </tr>
                     {% endfor %}
                   </tbody>
@@ -62,26 +66,28 @@
               {% else %}
               <h8>None at the moment</h8>
               {% endif %}
-              <h6>Completed Transactions</h6>
+
+              <h6>Completed Transactions</h6> <!--Completed Transactions Table-->
               {% if complete%}
-                <table class="table table-sm transaction-table">
+                <table class="table table-sm transaction-table" width="100%">
                   <thead class="thead-light">
                     <tr>
-                      <th scope="col" >Item</th>
-                      <th scope="col">Owners's Email</th>
-                      <th scope="col" class="rating-col">Your Rating</th>
-                      <th scope="col">Your Review</th>
-
+                      <th scope="col" style="width:30%" >Item</th>
+                      <th scope="col" style="width:25%">Owners's Email</th>
+                      <th scope="col" style="width:15%">Your Rating</th>
+                      <th scope="col" style="width:30%">Your Review</th>
                     </tr>
                   </thead>
                   <tbody>
                     {% for row in complete %}
                       <tr>
                         <td>{{row[3]}}</td> <!--item name-->
-                        <td class="overflow"><!--owner email-->
+
+                        <td><!--owner email and report button-->
                           <span>{{row[2]}}</span> <br>
-                          <span><button type="button" class="btn btn-info btn-sm float-left">Report User</button></span>
+                          <span><a type="submit" class="btn btn-outline-info btn-sm float-left" href="/profile/renter/report/{{row[2]}}">Report User</a></span>
                         </td>
+
                         {% if row[9] != None%}<!--rating or rate button-->
                           <td id="rating">{{row[9]}}</td>
                         {% else %}
@@ -135,9 +141,9 @@
                             </div>
                           </td>
                         {% endif %}
-                        <td class="align-middle" rowspan="4">
+                        <!-- <td class="align-middle" rowspan="4">
                           <a type="submit" class="btn btn-success text-center d-flex justify-content-center" href="/profile/renter/report/{{row[2]}}">Report</a>
-                        </td>
+                        </td> -->
                       </tr>
                     {% endfor %}
                   </tbody>
