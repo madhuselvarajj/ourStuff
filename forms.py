@@ -44,3 +44,8 @@ class RentalRequestForm(FlaskForm):
     pickup = DateField('pick up date', validators=[DataRequired()])
     dropoff = DateField('drop off date', validators=[DataRequired()])
     submit = SubmitField('Request this rental')
+    
+class reportForm(FlaskForm):
+    description = StringField('describe the incident', validators=[DataRequired()])
+    dateOfOffense = DateField ('when did the incident occur?', validators=[DataRequired()], format='%Y-%m-%d')
+    submit = SubmitField('Report')
