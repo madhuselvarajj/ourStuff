@@ -68,8 +68,30 @@ def logout():
     close_db()
     return redirect(url_for('home'))
 
-@bp.route('/reports')
+@bp.route('/reports', methods=('GET','POST'))
 @login_required
 def view_reports():
-    return render_template('admin_reports.html')
+    db = get_db()
+    cur = db.cursor()
+
+    recent = cur.execute(
+        'SELECT * FROM REPORT WHERE (Admin_ID) IS NULL ORDER BY (Date_of_report)'
+    ).fetchall()
+
+    resolved = cur.execute(
+        'SELECT * FROM REPORT WHERE (Admin_ID) IS NOT NULL ORDER BY (Date_of_report)'
+    ).fetchall()
+
+    
+    # order by Date_of_offense
+
+    print("Recent")
+    for row in recent:
+        print(row['User_email'])
+
+    print("Resolved")
+    for row in resolved:
+        print(row['User_email'])
+
+    return render_template('admin_reports.html', len1=len(recent), len2=len(resolved), recent=recent, resolved=resolved)
     
