@@ -1,8 +1,7 @@
 import sqlite3, flask
 from flask import jsonify, render_template, redirect, url_for, request, flash, g
 from forms import LoginForm, UserInfoForm, FilterForm, RentalRequestForm, ReportForm
-import datetime
-from datetime import datetime, date
+from datetime import datetime, timedelta, date
 import auth
 from auth import login_required, get_db
 import admin
@@ -93,25 +92,29 @@ def rent_item(title):
 
 # view profile (where user can view their transactions and items)
 @app.route('/profile', methods=['GET'])
-
+@login_required
 def profile():
     db = get_db()
     cur = db.cursor()
 
-    owner_rentals = cur.execute('SELECT COUNT (*) FROM RENTAL WHERE Owner_email=?', (g.user['Email'],)) #after flask-login is setup, check if owner_email = current_user.email
+    # get the number of items rented out, items borrowed, items posted, and interests
+    owner_rentals = cur.execute('SELECT COUNT (*) FROM RENTAL WHERE Owner_email=?', (g.user['Email'],))
     num_owner_rentals = cur.fetchone()[0]
     renter_rentals = cur.execute('SELECT COUNT (*) FROM RENTAL WHERE Renter_email=?', (g.user['Email'],))
     num_renter_rentals = cur.fetchone()[0]
+    all_items = cur.execute('SELECT COUNT (*) FROM ITEM WHERE Owner_email=?', (g.user['Email'],))
+    num_items = cur.fetchone()[0]
     interests = cur.execute('SELECT * FROM INTERESTED_IN WHERE User_email=?', (g.user['Email'],)).fetchall()
     all_interests = ""
+
     if interests:
         for i in interests:
             all_interests += i[1] + ", "
-        return render_template('profile.html', o_rentals = num_owner_rentals, r_rentals = num_renter_rentals, interests = all_interests[:-2])
+        return render_template('profile.html', o_rentals = num_owner_rentals, r_rentals = num_renter_rentals, items = num_items, interests = all_interests[:-2])
     else:
-        return render_template('profile.html', o_rentals = num_owner_rentals, r_rentals = num_renter_rentals)
+        return render_template('profile.html', o_rentals = num_owner_rentals, items = num_items, r_rentals = num_renter_rentals, itmes = num_items)
 
-
+# updates profile information
 @app.route('/profile/edit', methods=['GET', 'POST'])
 @login_required
 def editProfile():
@@ -137,6 +140,17 @@ def editProfile():
 
     return render_template('editProfile.html', form=form, user=user)
 
+# determines the number of days remaining in each booked rental
+def determineDaysRemaining(booked):
+    days_remaining=[]
+    for r in booked:
+        start = datetime.strptime(r[4], '%Y-%m-%d')
+        today = datetime.now()
+        diff = today - start
+        remaining = r[5] - diff.days
+        days_remaining.append(remaining)
+    return days_remaining
+
 # view all renter transactions
 @app.route('/profile/renter/transactions/all', methods = ['GET', 'POST'])
 @login_required
@@ -145,17 +159,10 @@ def renterTransactions():
     cur = db.cursor()
     pending = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (g.user['Email'],'pending',)).fetchall() #owner hasn't approved yet
     booked = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (g.user['Email'],'booked',)).fetchall() #active rental
-    days_remaining=[]
-    for r in booked:
-        start = datetime.datetime.strptime(r[4], '%Y-%m-%d').date()
-        today = date.today()
-        diff = today - start
-        remaining = r[5] - diff.days
-        days_remaining.append(remaining)
+    days_remaining = determineDaysRemaining(booked)
     complete = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (g.user['Email'],'complete',)).fetchall() #completed rental (item returned)
 
     if request.method == 'GET':
-        #TODO: move this to a seperate function because ownerTransactions does a similar thing
         if pending and booked and complete:
             return render_template('renterTransactions.html', pending = pending, booked = booked, days_remaining = days_remaining, complete = complete, zip=zip)
         elif pending and booked:
@@ -174,6 +181,7 @@ def renterTransactions():
             return render_template('renterTransactions.html')
 
     elif request.method == 'POST':
+        #stores either the user's rating or review
         rate = request.args.get('rate')
         if complete and rate == '1' and request.form['ratingBtn'] is not None:
             cur.execute('UPDATE RENTAL SET Rating=? WHERE tID=?',(int(request.form['rating']),request.form['ratingBtn']))
@@ -184,8 +192,9 @@ def renterTransactions():
         cur.close()
         return redirect(url_for('renterTransactions'))
 
-#request a report on anothert user where the transaction was with tID
+#request a report on another user where the transaction was with tID
 @app.route('/profile/renter/report/<ownerEmail>', methods = ['GET', 'POST'])
+@login_required
 def report(ownerEmail):
     form = ReportForm()
     if request.method == 'GET':
@@ -207,17 +216,10 @@ def ownerTransactions():
     cur = db.cursor()
     pending = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (g.user['Email'],'pending',)).fetchall() #need to approve
     booked = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (g.user['Email'],'booked',)).fetchall() #active rental
-    days_remaining=[]
-    for r in booked:
-        start = datetime.datetime.strptime(r[4], '%Y-%m-%d').date()
-        today = date.today()
-        diff = today - start
-        remaining = r[5] - diff.days
-        days_remaining.append(remaining)
+    days_remaining = determineDaysRemaining(booked)
     complete = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (g.user['Email'],'complete',)).fetchall() #item returned
 
     if request.method=='GET':
-        #TODO: move this to a seperate function because renterTransactions does a similar thing
         if pending and booked and complete:
             return render_template('ownerTransactions.html', pending = pending, booked = booked, days_remaining = days_remaining, complete = complete, zip=zip)
         elif pending and booked:
@@ -236,6 +238,7 @@ def ownerTransactions():
             return render_template('ownerTransactions.html')
 
     elif request.method == 'POST':
+        # updates a pending rental to booked, or a booked rental to complete
         if pending and request.form['approveBtn'] is not None:
             cur.execute('UPDATE RENTAL SET Type=? WHERE tID=?',('booked',request.form['approveBtn']))
         elif booked and request.form['completeBtn'] is not None:
@@ -246,18 +249,26 @@ def ownerTransactions():
 
 
 # view all owner's items, can choose to black out dates or delete
-@app.route('/user/<username>/owner/items/all', methods = ['GET', 'POST', 'DELETE'])
+@app.route('/profile/items/all', methods = ['GET', 'POST', 'DELETE'])
 @login_required
-def owner_items(username):
-    return render_template()
-    if request.method == "GET" :
-        return render_template()
-    elif request.method == "POST":
-        start_black_out = request.form["start"]
-        end_black_out = request.form["end"] #now just update blackout dates in the backend
-        return render_template()
-    else :
-        return render_template() #deletion
+def ownerItems():
+    db = get_db()
+    cur = db.cursor()
+    all_items = cur.execute('SELECT * FROM ITEM WHERE Owner_email=?', (g.user['Email'],)).fetchall()
+    blackouts = cur.execute('SELECT * FROM ITEM_BLACKOUT WHERE Owner_email=?', (g.user['Email'],)).fetchall()
+    if blackouts:
+        return render_template('items.html', items=all_items, blackouts=blackouts, zip=zip)
+    else:
+        return render_template('items.html', items=all_items)
+    # return render_template()
+    # if request.method == "GET" :
+    #     return render_template()
+    # elif request.method == "POST":
+    #     start_black_out = request.form["start"]
+    #     end_black_out = request.form["end"] #now just update blackout dates in the backend
+    #     return render_template()
+    # else :
+    #     return render_template() #deletion
 
 
 @app.route('/users',methods=['GET'])

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+          <div class="row">
+              <div class="col">
+              </div>
+              <div class="col-8">
+                <h1>All Items</h1>
+
+                <table class="table table-sm" width="100%">
+                  <thead class="thead-light">
+                    <tr>
+                      <th scope="col" style="width:20%" >Item</th>
+                      <th scope="col" style="width:15%">Category</th>
+                      <th scope="col" style="width:20%">Description</th>
+                      <th scope="col" style="width:15%">Daily Rate</th>
+                      <th scope="col" style="width:20%">Black-out Dates</th>
+                      <th scope="col" style="width:5%"></th>
+                      <th scope="col" style="width:5%"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% if blackouts%}
+                      {% for (row,i) in zip(items,blackouts) %}
+                        <tr>
+                          <td>{{row[0]}}</td> <!--item name-->
+                          <td>{{row[1]}}</td> <!--Category-->
+                          <td>{{row[3]}} </td> <!--Description-->
+                          <td>{{row[4]}}</td> <!--Daily Rate-->
+                          <td>{{i[2]}} - {{i[3]}}</td>
+                          <td>edit button</td> <!--Edit-->
+                          <td>delete button</td> <!--Delete-->
+                        </tr>
+                      {% endfor %}
+                    {% else %}
+                      {% for row in items %}
+                        <tr>
+                          <td>{{row[0]}}</td> <!--item name-->
+                          <td>{{row[1]}}</td> <!--Category-->
+                          <td>{{row[3]}} </td> <!--Description-->
+                          <td>{{row[4]}}</td> <!--Daily Rate-->
+                          <td>blackout button</td>
+                          <td>edit button</td> <!--Edit-->
+                          <td>delete button</td> <!--Delete-->
+                        </tr>
+                      {% endfor %}
+                    {% endif %}
+                  </tbody>
+                </table>
+              </div>
+              <div class="col">
+              </div>
+          </div>
+
+{% endblock content%}
