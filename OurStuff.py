@@ -1,11 +1,8 @@
 import sqlite3, flask
 from flask import jsonify, render_template, redirect, url_for, request, flash, g
-from forms import LoginForm, UserInfoForm
-from datetime import datetime, date
+from forms import LoginForm, UserInfoForm, FilterForm, RentalRequestForm, ReportForm
 import datetime
-from forms import FilterForm
-from forms import RentalRequestForm
-from forms import reportForm
+from datetime import datetime, date
 import auth
 from auth import login_required, get_db
 import admin
@@ -182,7 +179,7 @@ def renterTransactions():
             cur.execute('UPDATE RENTAL SET Rating=? WHERE tID=?',(int(request.form['rating']),request.form['ratingBtn']))
         elif complete and rate == '0' and request.form['reviewBtn'] is not None:
             cur.execute('UPDATE RENTAL SET Review=? WHERE tID=?',(request.form['review'],request.form['reviewBtn']))
-            
+
         db.commit()
         cur.close()
         return redirect(url_for('renterTransactions'))
@@ -190,7 +187,7 @@ def renterTransactions():
 #request a report on anothert user where the transaction was with tID
 @app.route('/profile/renter/report/<ownerEmail>', methods = ['GET', 'POST'])
 def report(ownerEmail):
-    form = reportForm()
+    form = ReportForm()
     if request.method == 'GET':
         return render_template('report.html', form=form)
     elif request.method == 'POST':

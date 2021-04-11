@@ -34,14 +34,8 @@ h6{
   margin-bottom: 30px;
 }
 
-.small-col{
-  width: 10%;
-}
-.med-col{
-  width: 25%;
-}
-.large-col{
-  width: 28%;
+.modal-button{
+  margin-top: 10px;
 }
 #rating{
   padding-left: 40px;
