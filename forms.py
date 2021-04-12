@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, DateField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, DateField, IntegerField, TextAreaField, SelectField
 from wtforms.validators import DataRequired
 from wtforms.widgets import PasswordInput
 
@@ -49,3 +49,10 @@ class ReportForm(FlaskForm):
     description = StringField('Describe the incident', validators=[DataRequired()])
     dateOfOffense = DateField ('When did the incident occur?', validators=[DataRequired()], format='%Y-%m-%d')
     submit = SubmitField('Report')
+
+class EditItemForm(FlaskForm):
+    title = StringField('Item name', validators=[DataRequired()])
+    category = SelectField('Category', validate_choice=False)
+    description = TextAreaField('Description', validators=[DataRequired()])
+    daily_rate = StringField('Daily Rate', validators=[DataRequired()])
+    submit = SubmitField('Save')

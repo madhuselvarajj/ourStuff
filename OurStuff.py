@@ -1,6 +1,6 @@
 import sqlite3, flask
 from flask import jsonify, render_template, redirect, url_for, request, flash, g
-from forms import LoginForm, UserInfoForm, FilterForm, RentalRequestForm, ReportForm
+from forms import LoginForm, UserInfoForm, FilterForm, RentalRequestForm, ReportForm, EditItemForm
 from datetime import datetime, timedelta, date
 import auth
 from auth import login_required, get_db
@@ -91,7 +91,7 @@ def rent_item(title):
     return render_template('rentItem.html', title=title, form=form) #render the home page again or a confirmation page
 
 # view profile (where user can view their transactions and items)
-@app.route('/profile', methods=['GET'])
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     db = get_db()
@@ -104,16 +104,23 @@ def profile():
     num_renter_rentals = cur.fetchone()[0]
     all_items = cur.execute('SELECT COUNT (*) FROM ITEM WHERE Owner_email=?', (g.user['Email'],))
     num_items = cur.fetchone()[0]
+    categories = cur.execute('SELECT Name FROM CATEGORY').fetchall()
     interests = cur.execute('SELECT * FROM INTERESTED_IN WHERE User_email=?', (g.user['Email'],)).fetchall()
     all_interests = ""
 
-    if interests:
-        for i in interests:
-            all_interests += i[1] + ", "
-        return render_template('profile.html', o_rentals = num_owner_rentals, r_rentals = num_renter_rentals, items = num_items, interests = all_interests[:-2])
-    else:
-        return render_template('profile.html', o_rentals = num_owner_rentals, items = num_items, r_rentals = num_renter_rentals, itmes = num_items)
+    if request.method=='GET':
+        if interests:
+            for i in interests:
+                all_interests += i[1] + ", "
+            return render_template('profile.html', o_rentals = num_owner_rentals, r_rentals = num_renter_rentals, items = num_items, interests = all_interests[:-2], categories = categories)
+        else:
+            return render_template('profile.html', o_rentals = num_owner_rentals, items = num_items, r_rentals = num_renter_rentals, itmes = num_items, categories = categories)
 
+    elif request.method == 'POST': # if user pressed add interest button
+        cur.execute('INSERT INTO INTERESTED_IN (User_email, Category_name) VALUES (?,?)',(g.user['Email'],request.form['interest'],))
+        db.commit()
+        cur.close()
+        return redirect(url_for('profile'))
 # updates profile information
 @app.route('/profile/edit', methods=['GET', 'POST'])
 @login_required
@@ -249,27 +256,59 @@ def ownerTransactions():
 
 
 # view all owner's items, can choose to black out dates or delete
-@app.route('/profile/items/all', methods = ['GET', 'POST', 'DELETE'])
+@app.route('/profile/items/all', methods = ['GET', 'POST'])
 @login_required
 def ownerItems():
     db = get_db()
     cur = db.cursor()
     all_items = cur.execute('SELECT * FROM ITEM WHERE Owner_email=?', (g.user['Email'],)).fetchall()
     blackouts = cur.execute('SELECT * FROM ITEM_BLACKOUT WHERE Owner_email=?', (g.user['Email'],)).fetchall()
-    if blackouts:
-        return render_template('items.html', items=all_items, blackouts=blackouts, zip=zip)
-    else:
-        return render_template('items.html', items=all_items)
-    # return render_template()
-    # if request.method == "GET" :
-    #     return render_template()
-    # elif request.method == "POST":
-    #     start_black_out = request.form["start"]
-    #     end_black_out = request.form["end"] #now just update blackout dates in the backend
-    #     return render_template()
-    # else :
-    #     return render_template() #deletion
+    if request.method == 'GET':
+        if blackouts:
+            return render_template('items.html', items=all_items, blackouts=blackouts, zip=zip)
+        else:
+            return render_template('items.html', items=all_items)
+    elif request.method == 'POST':
+        type = request.args.get('t')
+        if type == '1' and request.form['deleteBtn'] is not None :
+            cur.execute('DELETE FROM ITEM WHERE Title=? AND Owner_email=?',(request.form['deleteBtn'], g.user['Email']))
+        elif type == '0' and request.form['blackoutBtn'] is not None :
+            cur.execute('INSERT INTO ITEM_BLACKOUT (Title, Owner_email, Start_date, End_date) VALUES (?,?,?,?)',(request.form['blackoutBtn'],g.user['Email'],request.form['start'],request.form['end']))
+            temp = cur.execute('SELECT * FROM ITEM_BLACKOUT WHERE Owner_email=?', (g.user['Email'],)).fetchall()
 
+        db.commit()
+        cur.close()
+        return redirect(url_for('ownerItems'))
+
+# edit a specific item
+@app.route('/profile/items/edit', methods = ['GET', 'POST'])
+@login_required
+def editItem():
+    form = EditItemForm()
+    itemName = request.args.get('item')
+    db = get_db()
+    cur = db.cursor()
+    item = cur.execute('SELECT * FROM ITEM WHERE Title=? AND Owner_email=?', (itemName, g.user['Email'],)).fetchone()
+    categories = cur.execute('SELECT Name FROM CATEGORY').fetchall()
+
+    if form.validate_on_submit():
+        if form.category.data is None:
+            cat = item[1]
+        else:
+            cat = form.category.data
+        cur.execute('UPDATE ITEM SET Title=?, Category_name=?, Description=?, Daily_rate=? WHERE Owner_email=?',(form.title.data, cat, form.description.data, form.daily_rate.data, g.user['Email'],))
+        db.commit()
+        cur.close()
+        return redirect(url_for('ownerItems'))
+
+    elif request.method=='GET': #populates the form with the selected item's information
+        form.title.data = item[0]
+        form.category.choices =[(g[0]) for g in categories]
+        form.category.data = item[1]
+        form.description.data = item[3]
+        form.daily_rate.data = item[4]
+
+    return render_template('editItem.html', form=form)
 
 @app.route('/users',methods=['GET'])
 def sampleQuery1():

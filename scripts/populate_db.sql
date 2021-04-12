@@ -31,7 +31,6 @@ INSERT INTO CATEGORY VALUES
 INSERT INTO ITEM VALUES
 	("Shogun, James Clavell", "Historical Fiction", "stephanedorotich@gmail.com", "My favorite book", 1.5),
 	("Acoustic Solutions ASG-150", "Music Equipment", "stephanedorotich@gmail.com", "A great portable PA with 4 channels", 30.0),
-	("Book Title", "Non-fiction", "madhuselvaraj24@gmail.com", "A very nice book", 3.0),
 	("Fundamentals of Database Systems, Elmasri and Navathe", "Non-fiction", "stephanedorotich@gmail.com", "CPSC 471 textbook", 2.0);
 
 INSERT INTO ITEM_BLACKOUT VALUES
@@ -39,8 +38,6 @@ INSERT INTO ITEM_BLACKOUT VALUES
 
 INSERT INTO RENTAL (Renter_email, Owner_email, Item_title, Start_date, Duration, Pick_up_time, Drop_off_time, Type, Rating, Review) VALUES
 	("madhuselvaraj24@gmail.com", "stephanedorotich@gmail.com", "Fundamentals of Database Systems, Elmasri and Navathe", "2021-03-01", 14, "10:30", "10:30", "complete", NULL, NULL),
-	("madhuselvaraj24@gmail.com", "stephanedorotich@gmail.com", "Fundamentals of Database Systems, Elmasri and Navathe", "2021-03-01", 14, "10:30", "10:30", "pending", NULL, NULL),
-	("madhuselvaraj24@gmail.com", "stephanedorotich@gmail.com", "Fundamentals of Database Systems, Elmasri and Navathe", "2021-03-01", 14, "10:30", "10:30", "booked", NULL, NULL),
 	("navjotsk99@gmail.com", "stephanedorotich@gmail.com", "Fundamentals of Database Systems, Elmasri and Navathe", "2021-03-25", 14, "13:45", "20:00", "pending", NULL, NULL);
 
 INSERT INTO INTERESTED_IN VALUES
