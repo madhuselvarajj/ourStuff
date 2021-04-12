@@ -10,7 +10,6 @@ from db import get_db, close_db
 
 from forms import RegisterForm, LoginForm
 
-
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @bp.before_app_request
@@ -35,12 +34,36 @@ def login_required(view):
         return view(**kwargs)
     return wrapped_view
 
+# Register
+#   Register page for creating new user accounts.
+#
+# GET
+#   http://127.0.0.1:5000/auth/register
+#   Renders 'register.html' which prompts the user to enter details for account creation.
+#
+# POST
+#   http://127.0.0.1:5000/auth/register
+#   Creates a new user with the values from the registration form:
+#       - Insert into USER values from registration form:
+#         (
+#           Email,
+#           Password (hashed),
+#           First_name,
+#           Last_name,
+#           DoB,
+#           Street_address,
+#           City,
+#           Province,
+#           Postal Code
+#         )
+#           If INSERT fails:
+#           - Flash warning that user already exists with email.
+#           - Reload 'register.html'
+#       - Redirect to Login
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
-    #register
     form = RegisterForm()
 
-    # POST: register form submission
     if request.method == 'POST':
         if form.validate_on_submit():
             db = get_db()
@@ -55,6 +78,26 @@ def register():
             flash('Please enter the appropriate information in the fields. Make sure Date of Birth is in the form yyyy-mm-dd.', 'error')
     return render_template('register.html', form=form)
 
+# Login
+#   Logs in a user.
+#
+# GET
+#   http://127.0.0.1:5000/auth/login
+#   Renders 'login.html' which prompts the user to enter their email & password
+#
+# POST
+#   http://127.0.0.1:5000/auth/login
+#   Logs in the user with the values from the login form:
+#       - Select from USER where form['email'] = USER.Email
+#           If query result is empty:
+#           - Flash warning that email is incorrect
+#           - Reload 'login.html'
+#       - Checks the password hash from the form against the one belonging to the user tuple
+#           If password hashes don't match:
+#           - Flash warning that the password is incorrect
+#           - Reload 'login.html'
+#       - Update session['user_id'] to this user (this logs the user in)
+#       - Redirect to Home
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
     #login
@@ -85,8 +128,17 @@ def login():
     # GET: display login page
     return render_template('login.html', form=form)
 
+# Logout
+#   Logs out the active user.
+#
+# GET
+#   http://127.0.0.1:5000/auth/logout
+#   Logs out the user:
+#       - Clears the session data (this logs the user out)
+#       - Closes the db connection
+#       - Redirects to Home
 @bp.route('/logout')
 def logout():
-    close_db()
     session.clear()
+    close_db()
     return redirect(url_for('home'))

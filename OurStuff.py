@@ -1,26 +1,48 @@
 import sqlite3, flask
-from flask import jsonify, render_template, redirect, url_for, request, flash, g
+from flask import render_template, redirect, url_for, request, flash, g
 from forms import LoginForm, UserInfoForm, FilterForm, RentalRequestForm, ReportForm, EditItemForm
 from datetime import datetime, timedelta, date
 import auth
 from auth import login_required, get_db
 import admin
 
-# create the app
-# TODO: make a create_app function
+
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 app.config['SECRET_KEY'] = 'a722544382860619226245081983ab8f' #needed to use flask_wtforms
 app.register_blueprint(auth.bp)
 app.register_blueprint(admin.bp)
 
-# home page
+# Navjot
+# Home
+#   Description goes here.
+#
+# GET
+#   http://127.0.0.1:5000/
+#   http://127.0.0.1:5000/home
+#   Gets the user info from...:
+#       - thing one
+#       - thing two
 @app.route('/', methods=['GET'])
 @app.route('/home', methods=['GET'])
 def home():
     return render_template('home.html')
 
 # view all items
+# Navjot
+# Name
+#   Description goes here.
+#
+# GET
+#   http://127.0.0.1:5000/destination
+#   Gets the user info from...:
+#       - thing one
+#       - thing two
+# POST
+#   http://127.0.0.1:5000/destination
+#   Posts the info to ...:
+#       - thing one
+#       - thing two
 @app.route('/browse/all', methods=['GET', 'POST'])
 def view_all():
     # Load all items from DB, then pass to browse.html file to display
@@ -60,7 +82,20 @@ def view_all():
     return render_template('browse.html', data=data, form=form) #show the data in the html
 
 # user requests to rent item
-# not sure if route is correct
+# Navjot
+# Name
+#   Description goes here.
+#
+# GET
+#   http://127.0.0.1:5000/destination
+#   Gets the user info from...:
+#       - thing one
+#       - thing two
+# POST
+#   http://127.0.0.1:5000/destination
+#   Posts the info to ...:
+#       - thing one
+#       - thing two
 @app.route('/browse/item/rent/<string:title>', methods=['GET', 'POST'])
 @login_required
 def rent_item(title):
@@ -90,7 +125,45 @@ def rent_item(title):
         return redirect(url_for('home'))
     return render_template('rentItem.html', title=title, form=form) #render the home page again or a confirmation page
 
-# view profile (where user can view their transactions and items)
+# Stephane
+# Name
+#   Description goes here.
+#
+# GET
+#   http://127.0.0.1:5000/destination
+#   Gets the user info from...:
+#       - thing one
+#       - thing two
+# POST
+#   http://127.0.0.1:5000/destination
+#   Posts the info to ...:
+#       - thing one
+#       - thing two
+@app.route('/post')
+@login_required
+def post_item():
+    form = EditItemForm()
+
+    if request.method == 'POST':
+        #do stuff
+        print("hello!")
+    return render_template('postItem.html', form=form)
+
+
+# Navjot
+# Name
+#   view profile (where user can view their transactions and items)
+#
+# GET
+#   http://127.0.0.1:5000/destination
+#   Gets the user info from...:
+#       - thing one
+#       - thing two
+# POST
+#   http://127.0.0.1:5000/destination
+#   Posts the info to ...:
+#       - thing one
+#       - thing two
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
@@ -121,7 +194,22 @@ def profile():
         db.commit()
         cur.close()
         return redirect(url_for('profile'))
+
+# Madhu
 # updates profile information
+# Name
+#   Description goes here.
+#
+# GET
+#   http://127.0.0.1:5000/destination
+#   Gets the user info from...:
+#       - thing one
+#       - thing two
+# POST
+#   http://127.0.0.1:5000/destination
+#   Posts the info to ...:
+#       - thing one
+#       - thing two
 @app.route('/profile/edit', methods=['GET', 'POST'])
 @login_required
 def editProfile():
@@ -158,7 +246,20 @@ def determineDaysRemaining(booked):
         days_remaining.append(remaining)
     return days_remaining
 
-# view all renter transactions
+# Navjot
+# Name
+#   view all renter transactions
+#
+# GET
+#   http://127.0.0.1:5000/destination
+#   Gets the user info from...:
+#       - thing one
+#       - thing two
+# POST
+#   http://127.0.0.1:5000/destination
+#   Posts the info to ...:
+#       - thing one
+#       - thing two
 @app.route('/profile/renter/transactions/all', methods = ['GET', 'POST'])
 @login_required
 def renterTransactions():
@@ -200,6 +301,20 @@ def renterTransactions():
         return redirect(url_for('renterTransactions'))
 
 #request a report on another user where the transaction was with tID
+# Madhu
+# Name
+#   Description goes here.
+#
+# GET
+#   http://127.0.0.1:5000/destination
+#   Gets the user info from...:
+#       - thing one
+#       - thing two
+# POST
+#   http://127.0.0.1:5000/destination
+#   Posts the info to ...:
+#       - thing one
+#       - thing two
 @app.route('/profile/renter/report/<ownerEmail>', methods = ['GET', 'POST'])
 @login_required
 def report(ownerEmail):
@@ -216,6 +331,20 @@ def report(ownerEmail):
         return redirect(url_for('renterTransactions'))
 
 # view all owner transactions
+# Madhu
+# Name
+#   Description goes here.
+#
+# GET
+#   http://127.0.0.1:5000/destination
+#   Gets the user info from...:
+#       - thing one
+#       - thing two
+# POST
+#   http://127.0.0.1:5000/destination
+#   Posts the info to ...:
+#       - thing one
+#       - thing two
 @app.route('/profile/owner/transactions/all', methods = ['GET', 'POST'])
 @login_required
 def ownerTransactions():
@@ -256,6 +385,20 @@ def ownerTransactions():
 
 
 # view all owner's items, can choose to black out dates or delete
+# Madhu
+# Name
+#   Description goes here.
+#
+# GET
+#   http://127.0.0.1:5000/destination
+#   Gets the user info from...:
+#       - thing one
+#       - thing two
+# POST
+#   http://127.0.0.1:5000/destination
+#   Posts the info to ...:
+#       - thing one
+#       - thing two
 @app.route('/profile/items/all', methods = ['GET', 'POST'])
 @login_required
 def ownerItems():
@@ -281,6 +424,20 @@ def ownerItems():
         return redirect(url_for('ownerItems'))
 
 # edit a specific item
+# Madhu
+# Name
+#   Description goes here.
+#
+# GET
+#   http://127.0.0.1:5000/destination
+#   Gets the user info from...:
+#       - thing one
+#       - thing two
+# POST
+#   http://127.0.0.1:5000/destination
+#   Posts the info to ...:
+#       - thing one
+#       - thing two
 @app.route('/profile/items/edit', methods = ['GET', 'POST'])
 @login_required
 def editItem():
@@ -288,6 +445,7 @@ def editItem():
     itemName = request.args.get('item')
     db = get_db()
     cur = db.cursor()
+
     item = cur.execute('SELECT * FROM ITEM WHERE Title=? AND Owner_email=?', (itemName, g.user['Email'],)).fetchone()
     categories = cur.execute('SELECT Name FROM CATEGORY').fetchall()
 
@@ -310,11 +468,5 @@ def editItem():
 
     return render_template('editItem.html', form=form)
 
-@app.route('/users',methods=['GET'])
-def sampleQuery1():
-    con = sqlite3.connect(db)
-    cur = con.cursor()
-    users = cur.execute('SELECT * FROM USER;').fetchall()
-    return jsonify(users)
-
+    
 app.run()
