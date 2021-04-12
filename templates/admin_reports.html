@@ -1,8 +1,114 @@
 {% extends "admin_base.html" %}
 {% block content %}
 <div class="row">
-    <div class="col-sm">
-      <h1>Hello</h1>
+  <div class="col d-flex justify-content-center">
+    
+    <div id="accordion" style="width: 100%">
+      <div class="card">
+        <div class="card-header d-flex justify-content-around bg-secondary" id="headingOne">
+          <h5 class="mb-0">
+            <button class="btn btn-link text-white" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              <h5>Recent Reports</h5>
+            </button>
+          </h5>
+        </div>
+        <div id="collapseOne" class="collapse hide" aria-labelledby="headingOne" data-parent="#accordion">
+          <div class="card-body">
+            {% for i in range(0, len1)%}
+            <div class="d-flex justify-content-center">
+              <table class="table table-dark table-striped" style="width: 65%">
+                <thead>
+                  <th style="width: 40%">
+                    <p class="text-muted">Issue Date: {{recent[i]['Date_of_report']}}</p>
+                  </th>
+                  <th style="width: 60%">
+                    <div class="container text-right">
+                      <form action="" method="post">
+                        <a class="button btn-warning" type="submit"
+                        href="reports/resolve/{{recent[i]['User_email']}}/{{recent[i]['Reported_user_email']}}/{{recent[i]['Date_of_offense']}}">Resolve Report</a>
+                      </form>
+                    </div>
+                  </th>
+                </thead>
+                <tbody>
+                  <td>
+                    <h6>User:</h6>
+                    <p>{{recent[i]['User_email']}}</p>
+                  </td>
+                  <td>
+                    <h6>Date of Offense:</h6>
+                    <p>{{recent[i]['Date_of_offense']}}</p>
+                  </td>
+                  <tr>
+                    <td>
+                      <h6>Offending User:</h6>
+                      <p>{{recent[i]['Reported_user_email']}}</p>
+                    </td>
+                    <td>
+                      <h6>Description:</h6>
+                      <p>{{recent[i]['Offense_description']}}</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header d-flex justify-content-around bg-secondary" id="headingTwo">
+          <h5 class="mb-0">
+            <button class="btn btn-link text-white" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseOne">
+              <h5>Resolved Reports</h5>
+            </button>
+          </h5>
+        </div>
+        <div id="collapseTwo" class="collapse hide" aria-labelledby="headingTwo" data-parent="#accordion">
+          <div class="card-body">
+            {% for i in range(0, len2)%}
+            <div class="d-flex justify-content-center">
+              <table class="table table-dark table-striped" style="width: 65%">
+                <thead>
+                  <th style="width: 40%">
+                    <p class="text-muted">Issue Date: {{resolved[i]['Date_of_report']}}</p>
+                  </th>
+                  <th style="width: 60%">
+                    <div class="container text-right">
+                      <p class="text-muted">
+                        Resolved by: {{resolved[i]['Admin_ID']}}
+                      </p>
+                    </div>
+                  </th>
+                </thead>
+                <tbody>
+                  <td>
+                    <h6>User:</h6>
+                    <p>{{resolved[i]['User_email']}}</p>
+                  </td>
+                  <td>
+                    <h6>Date of Offense:</h6>
+                    <p>{{resolved[i]['Date_of_offense']}}</p>
+                  </td>
+                  <tr>
+                    <td>
+                      <h6>Offending User:</h6>
+                      <p>{{resolved[i]['Reported_user_email']}}</p>
+                    </td>
+                    <td>
+                      <h6>Description:</h6>
+                      <p>{{resolved[i]['Offense_description']}}</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 {% endblock content%}
