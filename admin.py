@@ -81,17 +81,21 @@ def view_reports():
     resolved = cur.execute(
         'SELECT * FROM REPORT WHERE (Admin_ID) IS NOT NULL ORDER BY (Date_of_report)'
     ).fetchall()
-
     
-    # order by Date_of_offense
-
-    print("Recent")
-    for row in recent:
-        print(row['User_email'])
-
-    print("Resolved")
-    for row in resolved:
-        print(row['User_email'])
-
     return render_template('admin_reports.html', len1=len(recent), len2=len(resolved), recent=recent, resolved=resolved)
     
+@bp.route('/reports/resolve/<user_email>/<reported_user_email>/<date_of_offense>')
+@login_required
+def resolve_report(user_email,reported_user_email,date_of_offense):
+    db = get_db()
+    cur = db.cursor()
+
+    cur.execute(
+        'UPDATE REPORT SET Admin_ID = ? WHERE User_email = ? AND Reported_user_email = ? AND Date_of_offense = ?',
+        (g.admin['Admin_ID'], user_email, reported_user_email, date_of_offense)
+    )
+    
+    db.commit()
+    cur.close()
+
+    return redirect(url_for('admin.view_reports'))

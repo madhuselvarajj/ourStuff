@@ -23,7 +23,10 @@
                   </th>
                   <th style="width: 60%">
                     <div class="container text-right">
-                      <button class="button btn-warning">Resolve Report</button>
+                      <form action="" method="post">
+                        <a class="button btn-warning" type="submit"
+                        href="reports/resolve/{{recent[i]['User_email']}}/{{recent[i]['Reported_user_email']}}/{{recent[i]['Date_of_offense']}}">Resolve Report</a>
+                      </form>
                     </div>
                   </th>
                 </thead>
@@ -72,9 +75,11 @@
                     <p class="text-muted">Issue Date: {{resolved[i]['Date_of_report']}}</p>
                   </th>
                   <th style="width: 60%">
-                    <p>
-                      {{resolved[i]['Admin_ID']}}
-                    </p>
+                    <div class="container text-right">
+                      <p class="text-muted">
+                        Resolved by: {{resolved[i]['Admin_ID']}}
+                      </p>
+                    </div>
                   </th>
                 </thead>
                 <tbody>
