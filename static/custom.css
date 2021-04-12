@@ -2,6 +2,7 @@ h1{
   padding-top: 10px;
   padding-bottom: 20px;
 }
+
 .transaction-heading{
   padding-top: 10px;
   padding-bottom: 0px;
@@ -17,6 +18,7 @@ h6{
   border: none;
   background-color:#f8f9fa;
 }
+
 .text-user-stats{
   color: #91972A;
 }
@@ -34,15 +36,14 @@ h6{
   margin-bottom: 30px;
 }
 
-.small-col{
-  width: 10%;
+.modal-button{
+  margin-top: 10px;
 }
-.med-col{
-  width: 25%;
+
+.profile-button{
+  margin-right: 10px;
 }
-.large-col{
-  width: 28%;
-}
+
 #rating{
   padding-left: 40px;
 }
@@ -53,10 +54,9 @@ h6{
 
 }
 .user-table td {
-    padding-right: 5;
-    padding-left: 0;
-    border: 5;
-
+  padding-right: 5;
+  padding-left: 0;
+  border: 5;
 }
 
 .user-info-card{

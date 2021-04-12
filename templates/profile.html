@@ -20,6 +20,12 @@
                         <div class="text-xlarge">{{r_rentals}}</div>
                       </a>
                     </div>
+                    <div class="d-flex col-md">
+                      <a href="{{url_for('ownerItems')}}" class="card-body text-user-stats">
+                        <div class="text-muted">All Items</div>
+                        <div class="text-xlarge">{{items}}</div>
+                      </a>
+                    </div>
                   </div>
                   <div class="card-body user-info-card">
                     <table class="table user-table m-0 ">
@@ -38,8 +44,13 @@
                         </tr>
                         {% if interests%}
                           <tr>
-                            <td>Interests:</td>
+                            <td id ="td-thickness">Interests:</td>
                             <td>{{interests}}</td>
+                          </tr>
+                        {%else%}
+                          <tr>
+                            <td id ="td-thickness">Interests:</td>
+                            <td>None</td>
                           </tr>
                         {% endif %}
                       </tbody>
@@ -47,8 +58,37 @@
                   </div>
                 </div>
                 <br>
-                <button type="button" class="btn btn-outline-info btn-sm float-right" onclick="window.location.href='{{ url_for('editProfile') }}'">Edit Profile</button>
-              </div>
+                <button type="button" class="btn btn-outline-info btn-sm float-right " onclick="window.location.href='{{ url_for('editProfile') }}'">Edit Profile</button>
+                <button type="button" class="btn btn-outline-info btn-sm float-right profile-button" data-toggle="modal" data-target="#interestModal">Add Interests</button> <!--modal button-->
+                <div class="modal fade" id="interestModal" tabindex="-1" role="dialog" aria-labelledby="addInterestsTitle" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="interestsModal">Add a category to your interests</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form method="POST" action="{{ url_for('profile')}}">
+                            <div class="form-group">
+                              <div class="input-group">
+                                <select class="form-control" id="interestSelect" name="interest">
+                                  {% for i in categories %}
+                                      <option>{{i[0]}}</option> <!--displays the available categories-->
+                                  {% endfor %}
+                                </select>
+                                <div class="input-group-append">
+                                  <button type="submit" class="btn btn-outline-primary float-right" name="interestBtn">Save</button>
+                                </div>
+                              </div>
+                            </div>
+                        </form>
+                      </div><!--end of modal body-->
+                    </div><!--end of modal content-->
+                  </div>
+                </div> <!--end of entire modal div-->
+              </div><!--end of middle cols-->
               <div class="col-3">
               </div>
           </div>
