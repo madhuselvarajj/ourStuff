@@ -15,14 +15,12 @@ app.register_blueprint(admin.bp)
 
 # Navjot
 # Home
-#   Description goes here.
+#   The home page is the default page that OurStuff will use to allow users to browse all general
+#   functionalities which are offered by the website
 #
 # GET
 #   http://127.0.0.1:5000/
 #   http://127.0.0.1:5000/home
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
 @app.route('/', methods=['GET'])
 @app.route('/home', methods=['GET'])
 def home():
@@ -31,18 +29,15 @@ def home():
 # view all items
 # Navjot
 # Name
-#   Description goes here.
-#
+#  Allows users to browse all items which are currently available for them to browse from in order to
+#   rent. Displays items that have been posted by other users
+#   this function will also allow the user to filter thier search criteria on city, category and price (maximum)
 # GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/browse/all
+#   Gets the user info from the authorized current login
 # POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/browse/all
+#   Posts the info to the same page, but only post what matches the search criteria
 @app.route('/browse/all', methods=['GET', 'POST'])
 def view_all():
     # Load all items from DB, then pass to browse.html file to display
