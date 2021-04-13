@@ -79,18 +79,16 @@ def view_all():
 # user requests to rent item
 # Navjot
 # Name
-#   Description goes here.
+#   This will allow a user to fill out the needed information in order to rent a new item
+#   Hence, they will create a rental request to be laster approved by the owner of the item. 
 #
 # GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/browse/item/rent/<string:title>
+#   Will show the screen requesting valid information in order to ask for a rental
 # POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/home
+#   Posts the info to the database, inserting into table RENTAL and then
+#   redirecting to the URL for home
 @app.route('/browse/item/rent/<string:title>', methods=['GET', 'POST'])
 @login_required
 def rent_item(title):
@@ -150,15 +148,12 @@ def post_item():
 #   view profile (where user can view their transactions and items)
 #
 # GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile
+#   Gets the user info from the current authenticated user
+#   note you can only go to profile page if you are currently logged in. 
 # POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile
+#   Posts the info to INTERESTS if a user chooses to indicate a new interest.
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
