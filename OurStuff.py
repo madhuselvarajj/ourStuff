@@ -238,18 +238,16 @@ def determineDaysRemaining(booked):
 
 # Navjot
 # Name
-#   view all renter transactions
+#   view all renter transactions, is a subsection of the profile funtionality. 
 #
 # GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile/renter/transactions/all
+#   Gets the user info from who the currently authenticated user in the system is
 # POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile/renter/transactions/all
+#   Posts the info to update the RENTAL table if the user chooses to do a RATING
+#   Posts the info to update the RENTAL table if the user chooses to do a review
+#   
 @app.route('/profile/renter/transactions/all', methods = ['GET', 'POST'])
 @login_required
 def renterTransactions():
