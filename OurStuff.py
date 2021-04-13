@@ -15,14 +15,12 @@ app.register_blueprint(admin.bp)
 
 # Navjot
 # Home
-#   Description goes here.
+#   The home page is the default page that OurStuff will use to allow users to browse all general
+#   functionalities which are offered by the website
 #
 # GET
 #   http://127.0.0.1:5000/
 #   http://127.0.0.1:5000/home
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
 @app.route('/', methods=['GET'])
 @app.route('/home', methods=['GET'])
 def home():
@@ -31,18 +29,15 @@ def home():
 # view all items
 # Navjot
 # Name
-#   Description goes here.
-#
+#  Allows users to browse all items which are currently available for them to browse from in order to
+#   rent. Displays items that have been posted by other users
+#   this function will also allow the user to filter thier search criteria on city, category and price (maximum)
 # GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/browse/all
+#   Gets the user info from the authorized current login
 # POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/browse/all
+#   Posts the info to the same page, but only post what matches the search criteria
 @app.route('/browse/all', methods=['GET', 'POST'])
 def view_all():
     # Load all items from DB, then pass to browse.html file to display
@@ -84,18 +79,16 @@ def view_all():
 # user requests to rent item
 # Navjot
 # Name
-#   Description goes here.
+#   This will allow a user to fill out the needed information in order to rent a new item
+#   Hence, they will create a rental request to be laster approved by the owner of the item. 
 #
 # GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/browse/item/rent/<string:title>
+#   Will show the screen requesting valid information in order to ask for a rental
 # POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/home
+#   Posts the info to the database, inserting into table RENTAL and then
+#   redirecting to the URL for home
 @app.route('/browse/item/rent/<string:title>', methods=['GET', 'POST'])
 @login_required
 def rent_item(title):
@@ -155,15 +148,12 @@ def post_item():
 #   view profile (where user can view their transactions and items)
 #
 # GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile
+#   Gets the user info from the current authenticated user
+#   note you can only go to profile page if you are currently logged in. 
 # POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile
+#   Posts the info to INTERESTS if a user chooses to indicate a new interest.
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
@@ -248,18 +238,16 @@ def determineDaysRemaining(booked):
 
 # Navjot
 # Name
-#   view all renter transactions
+#   view all renter transactions, is a subsection of the profile funtionality. 
 #
 # GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile/renter/transactions/all
+#   Gets the user info from who the currently authenticated user in the system is
 # POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile/renter/transactions/all
+#   Posts the info to update the RENTAL table if the user chooses to do a RATING
+#   Posts the info to update the RENTAL table if the user chooses to do a review
+#   
 @app.route('/profile/renter/transactions/all', methods = ['GET', 'POST'])
 @login_required
 def renterTransactions():
