@@ -121,6 +121,7 @@ def profile():
         db.commit()
         cur.close()
         return redirect(url_for('profile'))
+        
 # updates profile information
 @app.route('/profile/edit', methods=['GET', 'POST'])
 @login_required
