@@ -32,6 +32,20 @@ def login_required(view):
         return view(**kwargs)
     return wrapped_view
 
+# Stephane
+# Name
+#   Description goes here.
+#
+# GET
+#   http://127.0.0.1:5000/destination
+#   Gets the user info from...:
+#       - thing one
+#       - thing two
+# POST
+#   http://127.0.0.1:5000/destination
+#   Posts the info to ...:
+#       - thing one
+#       - thing two
 @bp.route('/login', methods=('GET','POST'))
 def login():
     # admin login
@@ -61,6 +75,20 @@ def login():
             flash(error, 'warning')
     return render_template('admin_login.html', form=form)
 
+# Stephane
+# Name
+#   Description goes here.
+#
+# GET
+#   http://127.0.0.1:5000/destination
+#   Gets the user info from...:
+#       - thing one
+#       - thing two
+# POST
+#   http://127.0.0.1:5000/destination
+#   Posts the info to ...:
+#       - thing one
+#       - thing two
 @bp.route('/logout')
 def logout():
     # admin logout
@@ -68,6 +96,20 @@ def logout():
     close_db()
     return redirect(url_for('home'))
 
+# Stephane
+# Name
+#   Description goes here.
+#
+# GET
+#   http://127.0.0.1:5000/destination
+#   Gets the user info from...:
+#       - thing one
+#       - thing two
+# POST
+#   http://127.0.0.1:5000/destination
+#   Posts the info to ...:
+#       - thing one
+#       - thing two
 @bp.route('/reports', methods=('GET','POST'))
 @login_required
 def view_reports():
@@ -83,7 +125,21 @@ def view_reports():
     ).fetchall()
     
     return render_template('admin_reports.html', len1=len(recent), len2=len(resolved), recent=recent, resolved=resolved)
-    
+
+# Stephane
+# Name
+#   Description goes here.
+#
+# GET
+#   http://127.0.0.1:5000/destination
+#   Gets the user info from...:
+#       - thing one
+#       - thing two
+# POST
+#   http://127.0.0.1:5000/destination
+#   Posts the info to ...:
+#       - thing one
+#       - thing two
 @bp.route('/reports/resolve/<user_email>/<reported_user_email>/<date_of_offense>')
 @login_required
 def resolve_report(user_email,reported_user_email,date_of_offense):
