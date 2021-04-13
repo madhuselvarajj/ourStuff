@@ -29,7 +29,7 @@
                         <td>{{row[6]}}</td> <!--pick up time-->
                         <td>{{row[7]}}</td> <!--drop off time-->
                         <td>{{row[1]}} <!--renter's email with approve button-->
-                          <form method="POST" action="">
+                          <form method="POST" action="{{ url_for('ownerTransactions', t=1)}}">
                             <button name="approveBtn" type="submit" class="btn btn-outline-info btn-sm btn float-left" value={{row[0]}}>Approve</button
                           </form>
                         </td>
@@ -63,7 +63,7 @@
                         <td>{{row[6]}}</td> <!--pick up time-->
                         <td>{{row[7]}}</td> <!--drop off time-->
                         <td>{{row[1]}} <!--renter's email with complete button-->
-                          <form method="POST" action="">
+                          <form method="POST" action="{{ url_for('ownerTransactions', t=0)}}">
                             <button name="completeBtn" type="submit" class="btn btn-outline-info btn-sm btn float-left" value={{row[0]}}>Mark as Complete</button>
                           </form>
                         </td>
