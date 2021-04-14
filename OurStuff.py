@@ -1,10 +1,13 @@
 import sqlite3, flask
 from flask import render_template, redirect, url_for, request, flash, g
-from forms import LoginForm, UserInfoForm, FilterForm, RentalRequestForm, ReportForm, EditItemForm
+from forms import (
+    EditItemForm, FilterForm, LoginForm, PostItemForm, RentalRequestForm, ReportForm, UserInfoForm
+)
 from datetime import datetime, timedelta, date
 import auth
 from auth import login_required, get_db
 import admin
+import time
 
 
 app = flask.Flask(__name__)
@@ -117,30 +120,6 @@ def rent_item(title):
             flash('The rental request has been submitted successfully.', 'success')
         return redirect(url_for('home'))
     return render_template('rentItem.html', title=title, form=form) #render the home page again or a confirmation page
-
-# Stephane
-# Name
-#   Description goes here.
-#
-# GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
-# POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
-@app.route('/post')
-@login_required
-def post_item():
-    form = EditItemForm()
-
-    if request.method == 'POST':
-        #do stuff
-        print("hello!")
-    return render_template('postItem.html', form=form)
 
 
 # Navjot
@@ -461,6 +440,65 @@ def editItem():
         form.daily_rate.data = item[4]
 
     return render_template('editItem.html', form=form)
+
+# Stephane
+# Post Item
+#   Users create a posting for one of their possessions they wish to
+#   make available for rent.
+#
+# GET
+#   http://127.0.0.1:5000/destination
+#   Renders the 'postItem.html' template to display the input form
+#
+# POST
+#   http://127.0.0.1:5000/destination
+#   Inserts a new item into the database from the user's input:
+#       If form is not valid -> GET
+#       - insert the new item into db
+#       - redirect to user's items
+@app.route('/post', methods=('GET','POST'))
+@login_required
+def postItem():
+    form = PostItemForm()
+    db = get_db()
+    cur = db.cursor()
+    if request.method == 'POST':
+        print(form.daily_rate.data)
+        if form.validate_on_submit():    
+            title = form.title.data
+            category = form.category.data
+            if ('<' in category):
+                category = category.split(' < ')[1]
+            description = form.description.data
+
+            daily_rate = form.daily_rate.data
+            print(daily_rate)
+            print(type(daily_rate))
+            try:
+                item = cur.execute('INSERT INTO ITEM VALUES (?, ?, ?, ?, ?)', (title, category, g.user['Email'], description, daily_rate,))
+                db.commit()
+                return redirect(url_for('ownerItems'))
+            except sqlite3.IntegrityError:
+                flash('Item title already in use!', 'warning')
+    
+    # Get all categories
+    categories = cur.execute(
+        'SELECT * FROM CATEGORY'
+    ).fetchall()
+    # Convert categories with parents to a string of format "Parent < Name"
+    ctgr = []
+    for c in categories:
+        if c[1] == None:
+            ctgr.append(c[0])
+        else:
+            val = c[1] + ' < ' + c[0]
+            ctgr.append(val)
+    # sort alphabetically
+    ctgr.sort()
+    # set form's Select Field choices
+    form.category.choices = [c for c in ctgr] # category
+    form.category.data = ctgr[0]
+    return render_template('postItem.html', form=form)
 
 
 app.run()

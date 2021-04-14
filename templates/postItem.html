@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+        <div class="row">
+          <div class="col">
+          </div>
+          <div class="col-6">
+            <h1>Post New Item</h1>
+            <p>
+                Please enter the details of what it is you wish to rent.
+            </p>
+            <form method="POST" action="">
+              {{ form.hidden_tag() }}
+              <div class="form-row">
+                <div class="form-group col">
+                    <label>Title</label>
+                    {{ form.title(class="form-control form-control-md") }}
+                  </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-md-8">
+                  <label>Category</label>
+                  {{ form.category(class="form-control form-control-md") }}
+                </div>
+                <div class="form-group col-md-4">
+                  <label>Daily Rate ($)</label>
+                  {{ form.daily_rate(class="form-control form-control-md") }}
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Item Description</label>
+                {{ form.description(class="form-control form-control-md") }}
+              </div>
+              <div class="form-group">
+              {{ form.submit(class="btn btn-primary") }}
+              </div>
+            </form>
+          </div>
+          <div class="col">
+          </div>
+        </div>
+{% endblock content%}
