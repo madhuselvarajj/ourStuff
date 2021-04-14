@@ -112,7 +112,7 @@ def rent_item(title):
                 flash('Please login or register for an account if you would like to rent this item', 'success')
                 return render_template('rentItem.html', title=title, form=form) #render the home page again or a confirmation page
 
-            cur.execute("INSERT INTO RENTAL (Renter_email, Owner_email, Item_title, Start_date, Duration, Pick_up_time, Drop_off_time, Type) VALUES (?,?,?,?,?,?,?,?)", (g.user['Email'], item[2], item[0], start, duration, pickup, dropoff, "PENDING"))
+            cur.execute("INSERT INTO RENTAL (Renter_email, Owner_email, Item_title, Start_date, Duration, Pick_up_time, Drop_off_time, Type) VALUES (?,?,?,?,?,?,?,?)", (g.user['Email'], item[2], item[0], start, duration, pickup, dropoff, "pending"))
             db.commit()
             flash('The rental request has been submitted successfully.', 'success')
         return redirect(url_for('home'))
@@ -363,9 +363,10 @@ def ownerTransactions():
 
     elif request.method == 'POST':
         # updates a pending rental to booked, or a booked rental to complete
-        if pending and request.form['approveBtn'] is not None:
+        type = request.args.get('t')
+        if pending and type == '1'  and request.form['approveBtn'] is not None:
             cur.execute('UPDATE RENTAL SET Type=? WHERE tID=?',('booked',request.form['approveBtn']))
-        elif booked and request.form['completeBtn'] is not None:
+        elif booked and type == '0' and request.form['completeBtn'] is not None:
             cur.execute('UPDATE RENTAL SET Type=? WHERE tID=?',('complete',request.form['completeBtn']))
         db.commit()
         cur.close()
@@ -392,20 +393,25 @@ def ownerTransactions():
 def ownerItems():
     db = get_db()
     cur = db.cursor()
-    all_items = cur.execute('SELECT * FROM ITEM WHERE Owner_email=?', (g.user['Email'],)).fetchall()
-    blackouts = cur.execute('SELECT * FROM ITEM_BLACKOUT WHERE Owner_email=?', (g.user['Email'],)).fetchall()
+    blackout_dict = {} #empty dictionary
+    all_items = cur.execute('SELECT * FROM ITEM WHERE Owner_email=?', (g.user['Email'],)).fetchall() #gets all items that the current user owns
+    for item in all_items:
+        blackout_dict[item[0]] = "None"
+
+    blackouts = cur.execute('SELECT * FROM ITEM_BLACKOUT WHERE Owner_email=?', (g.user['Email'],)).fetchall() #gets all blackouts that the current user has set
+    for b in blackouts:
+        for i in all_items:
+            if i[0] == b[0]:
+                blackout_dict[i[0]] = b[2] + " to " + b[3]
+
     if request.method == 'GET':
-        if blackouts:
-            return render_template('items.html', items=all_items, blackouts=blackouts, zip=zip)
-        else:
-            return render_template('items.html', items=all_items)
+        return render_template('items.html', items=all_items, blackouts=blackout_dict)
     elif request.method == 'POST':
         type = request.args.get('t')
         if type == '1' and request.form['deleteBtn'] is not None :
             cur.execute('DELETE FROM ITEM WHERE Title=? AND Owner_email=?',(request.form['deleteBtn'], g.user['Email']))
         elif type == '0' and request.form['blackoutBtn'] is not None :
             cur.execute('INSERT INTO ITEM_BLACKOUT (Title, Owner_email, Start_date, End_date) VALUES (?,?,?,?)',(request.form['blackoutBtn'],g.user['Email'],request.form['start'],request.form['end']))
-            temp = cur.execute('SELECT * FROM ITEM_BLACKOUT WHERE Owner_email=?', (g.user['Email'],)).fetchall()
 
         db.commit()
         cur.close()
@@ -442,7 +448,7 @@ def editItem():
             cat = item[1]
         else:
             cat = form.category.data
-        cur.execute('UPDATE ITEM SET Title=?, Category_name=?, Description=?, Daily_rate=? WHERE Owner_email=?',(form.title.data, cat, form.description.data, form.daily_rate.data, g.user['Email'],))
+        cur.execute('UPDATE ITEM SET Title=?, Category_name=?, Description=?, Daily_rate=? WHERE Title=?',(form.title.data, cat, form.description.data, form.daily_rate.data, itemName,))
         db.commit()
         cur.close()
         return redirect(url_for('ownerItems'))
@@ -456,5 +462,5 @@ def editItem():
 
     return render_template('editItem.html', form=form)
 
-    
+
 app.run()
