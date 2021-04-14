@@ -83,7 +83,7 @@ def view_all():
 # Navjot
 # Name
 #   This will allow a user to fill out the needed information in order to rent a new item
-#   Hence, they will create a rental request to be laster approved by the owner of the item. 
+#   Hence, they will create a rental request to be laster approved by the owner of the item.
 #
 # GET
 #   http://127.0.0.1:5000/browse/item/rent/<string:title>
@@ -129,7 +129,7 @@ def rent_item(title):
 # GET
 #   http://127.0.0.1:5000/profile
 #   Gets the user info from the current authenticated user
-#   note you can only go to profile page if you are currently logged in. 
+#   note you can only go to profile page if you are currently logged in.
 # POST
 #   http://127.0.0.1:5000/profile
 #   Posts the info to INTERESTS if a user chooses to indicate a new interest.
@@ -139,7 +139,7 @@ def profile():
     db = get_db()
     cur = db.cursor()
 
-    # get the number of items rented out, items borrowed, items posted, and interests
+    # get the number of items rented out, the number of items borrowed, the number of items posted, and the user's interests
     owner_rentals = cur.execute('SELECT COUNT (*) FROM RENTAL WHERE Owner_email=?', (g.user['Email'],))
     num_owner_rentals = cur.fetchone()[0]
     renter_rentals = cur.execute('SELECT COUNT (*) FROM RENTAL WHERE Renter_email=?', (g.user['Email'],))
@@ -150,48 +150,57 @@ def profile():
     interests = cur.execute('SELECT * FROM INTERESTED_IN WHERE User_email=?', (g.user['Email'],)).fetchall()
     all_interests = ""
 
+    # pass interests to profile.html if not empty
     if request.method=='GET':
         if interests:
             for i in interests:
-                all_interests += i[1] + ", "
+                all_interests += i[1] + ", " # stores only the names of the user's interests
             return render_template('profile.html', o_rentals = num_owner_rentals, r_rentals = num_renter_rentals, items = num_items, interests = all_interests[:-2], categories = categories)
         else:
             return render_template('profile.html', o_rentals = num_owner_rentals, items = num_items, r_rentals = num_renter_rentals, itmes = num_items, categories = categories)
 
-    elif request.method == 'POST': # if user pressed add interest button
+    elif request.method == 'POST': # if user pressed add interest button, inserts a new row into INTERESTED_IN
         cur.execute('INSERT INTO INTERESTED_IN (User_email, Category_name) VALUES (?,?)',(g.user['Email'],request.form['interest'],))
         db.commit()
         cur.close()
         return redirect(url_for('profile'))
 
-# Madhu
-# updates profile information
-# Name
-#   Description goes here.
+
+# Edit Profile Informaton
+#   Allows users to edit the information on the profile
 #
 # GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile/edit
+#   Renders the 'editProfile.html' template to display the edit profile form with the current user's information already populated
+#
 # POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000//profile/edit
+#   Updates USER using the values from the edit profile form:
+#         (
+#           Email,
+#           First_name,
+#           Last_name,
+#           DoB,
+#           Street_address,
+#           City,
+#           Province,
+#           Postal Code
+#         )
+#   Once updated, redirects to profile page
 @app.route('/profile/edit', methods=['GET', 'POST'])
 @login_required
 def editProfile():
     form = UserInfoForm()
     db = get_db()
     cur = db.cursor()
-    user = cur.execute('SELECT * FROM USER WHERE Email=?', (g.user['Email'],)).fetchone()
+    user = cur.execute('SELECT * FROM USER WHERE Email=?', (g.user['Email'],)).fetchone() #gets the current logged in user to pass to editProfile.html
 
-    if form.validate_on_submit():
+    if form.validate_on_submit(): #update g.user table with entered information
         cur.execute('UPDATE USER SET Email=?, First_name=?, Last_name=?, Dob=?, Street_address =?, City=?, Province=?, Postal_code=? WHERE Email=?',(form.email.data, form.fname.data, form.lname.data, form.dob.data, form.street.data, form.city.data, form.province.data, form.postalCode.data, g.user['Email'],))
         db.commit()
         cur.close()
         return redirect(url_for('profile'))
+
     elif request.method=='GET': #populates the form with the current_user's information
         form.email.data = user[0]
         form.fname.data = user[2]
@@ -217,7 +226,7 @@ def determineDaysRemaining(booked):
 
 # Navjot
 # Name
-#   view all renter transactions, is a subsection of the profile funtionality. 
+#   view all renter transactions, is a subsection of the profile funtionality.
 #
 # GET
 #   http://127.0.0.1:5000/profile/renter/transactions/all
@@ -226,17 +235,19 @@ def determineDaysRemaining(booked):
 #   http://127.0.0.1:5000/profile/renter/transactions/all
 #   Posts the info to update the RENTAL table if the user chooses to do a RATING
 #   Posts the info to update the RENTAL table if the user chooses to do a review
-#   
+#
 @app.route('/profile/renter/transactions/all', methods = ['GET', 'POST'])
 @login_required
 def renterTransactions():
     db = get_db()
     cur = db.cursor()
-    pending = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (g.user['Email'],'pending',)).fetchall() #owner hasn't approved yet
-    booked = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (g.user['Email'],'booked',)).fetchall() #active rental
-    days_remaining = determineDaysRemaining(booked)
-    complete = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (g.user['Email'],'complete',)).fetchall() #completed rental (item returned)
+    # gets the pending, booked, and complete rentals where the current user is the renter
+    pending = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (g.user['Email'],'pending',)).fetchall() # not approved by owner
+    booked = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (g.user['Email'],'booked',)).fetchall() # ongoing rental
+    days_remaining = determineDaysRemaining(booked) # determine the number of days remaining for each booked rental
+    complete = cur.execute('SELECT * FROM RENTAL WHERE Renter_email=? AND Type=?', (g.user['Email'],'complete',)).fetchall() # completed rental (item returned and owner has marked it as complete)
 
+    # passes only the non null rentals to 'renterTransactions.html', along with the days remaining
     if request.method == 'GET':
         if pending and booked and complete:
             return render_template('renterTransactions.html', pending = pending, booked = booked, days_remaining = days_remaining, complete = complete, zip=zip)
@@ -255,9 +266,8 @@ def renterTransactions():
         else:
             return render_template('renterTransactions.html')
 
-    elif request.method == 'POST':
-        #stores either the user's rating or review
-        rate = request.args.get('rate')
+    elif request.method == 'POST':# updates either the Rating or Review attribute for a completed RENTAL
+        rate = request.args.get('rate') # used to determine if the rating or review button was pressed
         if complete and rate == '1' and request.form['ratingBtn'] is not None:
             cur.execute('UPDATE RENTAL SET Rating=? WHERE tID=?',(int(request.form['rating']),request.form['ratingBtn']))
         elif complete and rate == '0' and request.form['reviewBtn'] is not None:
@@ -267,21 +277,27 @@ def renterTransactions():
         cur.close()
         return redirect(url_for('renterTransactions'))
 
-#request a report on another user where the transaction was with tID
-# Madhu
-# Name
-#   Description goes here.
+# Report User
+#   Allows users to report any user they have rented from
 #
 # GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile/renter/report/<ownerEmail>
+#   Renders the 'report.html' template to display the report user form
+#   ownerEmail is the email address of the offending user
+#
 # POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile/renter/report/<ownerEmail>
+#   Creates a new REPORT using the values from the report user form:
+#         - Insert into REPORT values from report user form:
+#         (
+#           User_email,
+#           Reported_user_email,
+#           Admin_ID,
+#           Offense_description,
+#           Date_of_offense,
+#           Date_of_report,
+#         )
+#       - Redirect to renterTransactions page
 @app.route('/profile/renter/report/<ownerEmail>', methods = ['GET', 'POST'])
 @login_required
 def report(ownerEmail):
@@ -297,31 +313,34 @@ def report(ownerEmail):
         cur.execute("INSERT INTO REPORT (User_email, Reported_user_email, Admin_ID, Offense_description, Date_of_offense, Date_of_report) VALUES (?,?,?,?,?,?)", (g.user['Email'], ownerEmail, None, description, date, todaysDate))
         return redirect(url_for('renterTransactions'))
 
-# view all owner transactions
-# Madhu
-# Name
-#   Description goes here.
+# View Transaction History of Owned Items
+#   Allows users to view the transaction history of rentals where they are the owner
 #
 # GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile/owner/transactions/all/
+#   Gets all of the current user's pending, booked, and completed rentals where they are the owner
+#   Renders the 'items.html' template to display the owner's transactions, passes the rentals retrieved from the database
+#
 # POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile/owner/transactions/all?type=1
+#   Updates the type of a RENTAL from pending to booked using the transaction id passed from the page
+#
+#   http://127.0.0.1:5000/profile/owner/transactions/all?type=0
+#   Updates the type of a RENTAL from booked to complete using the transaction id passed from the page
+#
+#   Reloads the page once done
 @app.route('/profile/owner/transactions/all', methods = ['GET', 'POST'])
 @login_required
 def ownerTransactions():
     db = get_db()
     cur = db.cursor()
-    pending = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (g.user['Email'],'pending',)).fetchall() #need to approve
-    booked = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (g.user['Email'],'booked',)).fetchall() #active rental
-    days_remaining = determineDaysRemaining(booked)
-    complete = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (g.user['Email'],'complete',)).fetchall() #item returned
+    # gets the pending, booked, and complete rentals where the current user is the owner
+    pending = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (g.user['Email'],'pending',)).fetchall() # need to approve
+    booked = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (g.user['Email'],'booked',)).fetchall() # active rental
+    days_remaining = determineDaysRemaining(booked) # determine the number of days remaining for each booked rental
+    complete = cur.execute('SELECT * FROM RENTAL WHERE Owner_email=? AND Type=?', (g.user['Email'],'complete',)).fetchall() # item returned
 
+    # passes only the non null rentals to 'ownderTransactions.html', along with the days remaining
     if request.method=='GET':
         if pending and booked and complete:
             return render_template('ownerTransactions.html', pending = pending, booked = booked, days_remaining = days_remaining, complete = complete, zip=zip)
@@ -352,21 +371,27 @@ def ownerTransactions():
         return redirect(url_for('ownerTransactions'))
 
 
-# view all owner's items, can choose to black out dates or delete
-# Madhu
-# Name
-#   Description goes here.
+# View Items
+#   Allows users to view, edit, or delete the items they have posted, and allows them to add blackout dates to specific items
 #
 # GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile/items/all
+#   Gets all of the current user's items, along with their blackout dates if available
+#   Renders the 'items.html' template to display the owner's items, passes the items retrieved from the database and the blackout dates
+#
 # POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile/items/all?type=1
+#   Deletes an ITEM from the database using the passed item title value:
+#
+#   http://127.0.0.1:5000/profile/items/all?type=0
+#   Inserts an ITEM_BLACKOUT using the values entered by the user:
+#         (
+#           Title,
+#           Owner_email,
+#           Start_date,
+#           End_date,
+#         )
+#   Reloads the page once done
 @app.route('/profile/items/all', methods = ['GET', 'POST'])
 @login_required
 def ownerItems():
@@ -386,7 +411,7 @@ def ownerItems():
     if request.method == 'GET':
         return render_template('items.html', items=all_items, blackouts=blackout_dict)
     elif request.method == 'POST':
-        type = request.args.get('t')
+        type = request.args.get('t') # type determines if delete or add blackout button was pressed
         if type == '1' and request.form['deleteBtn'] is not None :
             cur.execute('DELETE FROM ITEM WHERE Title=? AND Owner_email=?',(request.form['deleteBtn'], g.user['Email']))
         elif type == '0' and request.form['blackoutBtn'] is not None :
@@ -396,34 +421,36 @@ def ownerItems():
         cur.close()
         return redirect(url_for('ownerItems'))
 
-# edit a specific item
-# Madhu
-# Name
-#   Description goes here.
+# Edit an item
+#   Allows users to edit the information for an item they have posted
 #
 # GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile/items/edit
+#   Renders the 'editItem.html' template to display the edit item form with the selected item's information already populated
+#
 # POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile/items/edit
+#   Updates ITEM using the values from the edit item form:
+#         (
+#           Title,
+#           Category_name,
+#           Description,
+#           Daily_rate,
+#         )
+#   Once updated, redirects to ownerItems page
 @app.route('/profile/items/edit', methods = ['GET', 'POST'])
 @login_required
 def editItem():
     form = EditItemForm()
-    itemName = request.args.get('item')
+    itemName = request.args.get('item') # specific item that the user desires to edit
     db = get_db()
     cur = db.cursor()
 
-    item = cur.execute('SELECT * FROM ITEM WHERE Title=? AND Owner_email=?', (itemName, g.user['Email'],)).fetchone()
-    categories = cur.execute('SELECT Name FROM CATEGORY').fetchall()
+    item = cur.execute('SELECT * FROM ITEM WHERE Title=? AND Owner_email=?', (itemName, g.user['Email'],)).fetchone() # gets the item that the user desires to edit
+    categories = cur.execute('SELECT Name FROM CATEGORY').fetchall() # gets all the categories
 
-    if form.validate_on_submit():
-        if form.category.data is None:
+    if form.validate_on_submit(): # update item using entered information
+        if form.category.data is None: # form.category.data will be none if user doesn't select a new category
             cat = item[1]
         else:
             cat = form.category.data
@@ -464,7 +491,7 @@ def postItem():
     cur = db.cursor()
     if request.method == 'POST':
         print(form.daily_rate.data)
-        if form.validate_on_submit():    
+        if form.validate_on_submit():
             title = form.title.data
             category = form.category.data
             if ('<' in category):
@@ -480,7 +507,7 @@ def postItem():
                 return redirect(url_for('ownerItems'))
             except sqlite3.IntegrityError:
                 flash('Item title already in use!', 'warning')
-    
+
     # Get all categories
     categories = cur.execute(
         'SELECT * FROM CATEGORY'
