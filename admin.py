@@ -32,20 +32,78 @@ def login_required(view):
         return view(**kwargs)
     return wrapped_view
 
-# Stephane
-# Name
-#   Description goes here.
+
+# View Reports
+#   Displays all user reports (where one user has reported another for an offense).
+#   Admin's can resolve a report which moves it from the Recent reports section to the Resolved reports section
 #
 # GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/admin/reports
+#   Displays all reports:
+#       Recent reports:
+#           - Select from REPORT where Admin_ID is NULL
+#       Resolved reports:
+#           - Select from REPORT where Admin_ID is not NULL
+@bp.route('/reports')
+@login_required
+def view_reports():
+    db = get_db()
+    cur = db.cursor()
+
+    recent = cur.execute(
+        'SELECT * FROM REPORT WHERE (Admin_ID) IS NULL ORDER BY (Date_of_report)'
+    ).fetchall()
+
+    resolved = cur.execute(
+        'SELECT * FROM REPORT WHERE (Admin_ID) IS NOT NULL ORDER BY (Date_of_report)'
+    ).fetchall()
+    
+    return render_template('admin_reports.html', len1=len(recent), len2=len(resolved), recent=recent, resolved=resolved)
+
+# Resolve Report
+#   Resolves a report by updating its Admin_ID to the ID of the admin who resolved it.
+#
 # POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/reports/resolve/<user_email>/<reported_user_email>/<date_of_offense>
+#   Updates the report with the primary key (user_email, reported_user_email, date_of_offense)
+#   with the Admin_ID of the logged in Admin
+@bp.route('/reports/resolve/<user_email>/<reported_user_email>/<date_of_offense>')
+@login_required
+def resolve_report(user_email,reported_user_email,date_of_offense):
+    db = get_db()
+    cur = db.cursor()
+
+    cur.execute(
+        'UPDATE REPORT SET Admin_ID = ? WHERE User_email = ? AND Reported_user_email = ? AND Date_of_offense = ?',
+        (g.admin['Admin_ID'], user_email, reported_user_email, date_of_offense)
+    )
+    
+    db.commit()
+    cur.close()
+
+    return redirect(url_for('admin.view_reports'))
+    
+# Login
+#   Logs in a user.
+#
+# GET
+#   http://127.0.0.1:5000/admin/
+#   http://127.0.0.1:5000/admin/login
+#   Renders 'admin_login.html' which prompts the user to enter their admin_id & password
+#
+# POST
+#   http://127.0.0.1:5000/admin/login
+#   Logs in the user with the values from the login form:
+#       - Select from ADMIN where form['Admin_ID'] = ADMIN.Admin_ID
+#           If query result is empty:
+#           - Flash warning that email is incorrect
+#           - Reload 'admin_login.html'
+#       - Check password hashes
+#           If password hashes don't match:
+#           - Flash warning that the password is incorrect
+#           - Reload 'admin_login.html'
+#       - Update session['admin'] to this admin (this logs the admin in)
+#       - Redirect to 'admin.view_reports'
 @bp.route('/login', methods=('GET','POST'))
 def login():
     # admin login
@@ -75,83 +133,17 @@ def login():
             flash(error, 'warning')
     return render_template('admin_login.html', form=form)
 
-# Stephane
-# Name
-#   Description goes here.
+# Logout
+#   Logs out the active administrator.
 #
 # GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
-# POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/admin/logout
+#   Logs out the administrator:
+#       - Clears the session data (this logs the user out)
+#       - Closes the db connection
+#       - Redirects to Home
 @bp.route('/logout')
 def logout():
-    # admin logout
     session.clear()
     close_db()
     return redirect(url_for('home'))
-
-# Stephane
-# Name
-#   Description goes here.
-#
-# GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
-# POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
-@bp.route('/reports', methods=('GET','POST'))
-@login_required
-def view_reports():
-    db = get_db()
-    cur = db.cursor()
-
-    recent = cur.execute(
-        'SELECT * FROM REPORT WHERE (Admin_ID) IS NULL ORDER BY (Date_of_report)'
-    ).fetchall()
-
-    resolved = cur.execute(
-        'SELECT * FROM REPORT WHERE (Admin_ID) IS NOT NULL ORDER BY (Date_of_report)'
-    ).fetchall()
-    
-    return render_template('admin_reports.html', len1=len(recent), len2=len(resolved), recent=recent, resolved=resolved)
-
-# Stephane
-# Name
-#   Description goes here.
-#
-# GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
-# POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
-@bp.route('/reports/resolve/<user_email>/<reported_user_email>/<date_of_offense>')
-@login_required
-def resolve_report(user_email,reported_user_email,date_of_offense):
-    db = get_db()
-    cur = db.cursor()
-
-    cur.execute(
-        'UPDATE REPORT SET Admin_ID = ? WHERE User_email = ? AND Reported_user_email = ? AND Date_of_offense = ?',
-        (g.admin['Admin_ID'], user_email, reported_user_email, date_of_offense)
-    )
-    
-    db.commit()
-    cur.close()
-
-    return redirect(url_for('admin.view_reports'))
