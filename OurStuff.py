@@ -464,30 +464,42 @@ def postItem():
     cur = db.cursor()
 
     if request.method == 'POST':
+        print(form.daily_rate.data)
         if form.validate_on_submit():    
             title = form.title.data
-            category = form.subcategory.data
+            category = form.category.data
+            if ('<' in category):
+                category = category.split(' < ')[1]
             description = form.description.data
+
             daily_rate = form.daily_rate.data
+            print(daily_rate)
+            print(type(daily_rate))
             try:
-                item = cur.execute('INSERT INTO ITEM VALUES (?, ?, ?, ?, ?)', (title, category, g.user['Email'], 'this is a description', 12.0))
-                print("I'm here")
+                item = cur.execute('INSERT INTO ITEM VALUES (?, ?, ?, ?, ?)', (title, category, g.user['Email'], description, daily_rate,))
+                db.commit()
+                return redirect(url_for('ownerItems'))
             except sqlite3.IntegrityError:
-                flash('Item title is taken!', 'warning')
+                flash('Item title already in use!', 'warning')
             
-            return redirect(url_for('ownerItems'))
     
-    parents = cur.execute(
-        'SELECT Name FROM CATEGORY WHERE Parent IS NULL'
-    ).fetchall()
-    children = cur.execute(
-        'SELECT * FROM CATEGORY WHERE Parent IS NOT NULL'
+    categories = cur.execute(
+        'SELECT * FROM CATEGORY'
     ).fetchall()
 
-    form.category.choices = [(c[0]) for c in parents] # category
-    form.category.data = parents[1]
-    form.subcategory.choices = [(s[0]) for s in children] # subcategory
-    form.category.data = children[1]
+    ctgr = []
+
+    for c in categories:
+        if c[1] == None:
+            ctgr.append(c[0])
+        else:
+            val = c[1] + ' < ' + c[0]
+            ctgr.append(val)
+
+    ctgr.sort()
+
+    form.category.choices = [c for c in ctgr] # category
+    form.category.data = ctgr[0]
 
 
     return render_template('postItem.html', form=form)
