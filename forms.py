@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, DateField, IntegerField, TextAreaField, SelectField
-from wtforms.validators import DataRequired
+from wtforms import (
+    DateField, DecimalField, IntegerField, PasswordField, SelectField, StringField, SubmitField, TextAreaField
+)
+from wtforms.validators import DataRequired, NumberRange
 from wtforms.widgets import PasswordInput
 
 class LoginForm(FlaskForm):
@@ -56,3 +58,11 @@ class EditItemForm(FlaskForm):
     description = TextAreaField('Description', validators=[DataRequired()])
     daily_rate = StringField('Daily Rate', validators=[DataRequired()])
     submit = SubmitField('Save')
+
+class PostItemForm(FlaskForm):
+    title = StringField(validators=[DataRequired()])
+    category = SelectField(validate_choice=False)
+    subcategory = SelectField(validate_choice=False)
+    description = TextAreaField(validators=[DataRequired()])
+    daily_rate = DecimalField(places=2,validators=[DataRequired(),NumberRange(0,1000,"Please enter a value from 0 to 1000")])
+    submit = SubmitField('Post for Rent')
