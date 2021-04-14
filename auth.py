@@ -92,7 +92,7 @@ def register():
 #           If query result is empty:
 #           - Flash warning that email is incorrect
 #           - Reload 'login.html'
-#       - Checks the password hash from the form against the one belonging to the user tuple
+#       - Check password hashes
 #           If password hashes don't match:
 #           - Flash warning that the password is incorrect
 #           - Reload 'login.html'
