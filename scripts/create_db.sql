@@ -113,7 +113,7 @@ CREATE TABLE RENTAL
     Renter_email	TEXT		NOT NULL,
     Owner_email		TEXT		NOT NULL,
     Item_title		TEXT		NOT NULL,
-    Start_date		TEXT		NOT NULL, 
+    Start_date		TEXT		NOT NULL,
     Duration		INTEGER		NOT NULL,
     Pick_up_time	TEXT		NOT NULL,
     Drop_off_time	TEXT		NOT NULL,

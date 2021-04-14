@@ -18,14 +18,12 @@ app.register_blueprint(admin.bp)
 
 # Navjot
 # Home
-#   Description goes here.
+#   The home page is the default page that OurStuff will use to allow users to browse all general
+#   functionalities which are offered by the website
 #
 # GET
 #   http://127.0.0.1:5000/
 #   http://127.0.0.1:5000/home
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
 @app.route('/', methods=['GET'])
 @app.route('/home', methods=['GET'])
 def home():
@@ -34,18 +32,15 @@ def home():
 # view all items
 # Navjot
 # Name
-#   Description goes here.
-#
+#  Allows users to browse all items which are currently available for them to browse from in order to
+#   rent. Displays items that have been posted by other users
+#   this function will also allow the user to filter thier search criteria on city, category and price (maximum)
 # GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/browse/all
+#   Gets the user info from the authorized current login
 # POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/browse/all
+#   Posts the info to the same page, but only post what matches the search criteria
 @app.route('/browse/all', methods=['GET', 'POST'])
 def view_all():
     # Load all items from DB, then pass to browse.html file to display
@@ -87,18 +82,16 @@ def view_all():
 # user requests to rent item
 # Navjot
 # Name
-#   Description goes here.
+#   This will allow a user to fill out the needed information in order to rent a new item
+#   Hence, they will create a rental request to be laster approved by the owner of the item. 
 #
 # GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/browse/item/rent/<string:title>
+#   Will show the screen requesting valid information in order to ask for a rental
 # POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/home
+#   Posts the info to the database, inserting into table RENTAL and then
+#   redirecting to the URL for home
 @app.route('/browse/item/rent/<string:title>', methods=['GET', 'POST'])
 @login_required
 def rent_item(title):
@@ -122,7 +115,7 @@ def rent_item(title):
                 flash('Please login or register for an account if you would like to rent this item', 'success')
                 return render_template('rentItem.html', title=title, form=form) #render the home page again or a confirmation page
 
-            cur.execute("INSERT INTO RENTAL (Renter_email, Owner_email, Item_title, Start_date, Duration, Pick_up_time, Drop_off_time, Type) VALUES (?,?,?,?,?,?,?,?)", (g.user['Email'], item[2], item[0], start, duration, pickup, dropoff, "PENDING"))
+            cur.execute("INSERT INTO RENTAL (Renter_email, Owner_email, Item_title, Start_date, Duration, Pick_up_time, Drop_off_time, Type) VALUES (?,?,?,?,?,?,?,?)", (g.user['Email'], item[2], item[0], start, duration, pickup, dropoff, "pending"))
             db.commit()
             flash('The rental request has been submitted successfully.', 'success')
         return redirect(url_for('home'))
@@ -134,15 +127,12 @@ def rent_item(title):
 #   view profile (where user can view their transactions and items)
 #
 # GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile
+#   Gets the user info from the current authenticated user
+#   note you can only go to profile page if you are currently logged in. 
 # POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile
+#   Posts the info to INTERESTS if a user chooses to indicate a new interest.
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
@@ -227,18 +217,16 @@ def determineDaysRemaining(booked):
 
 # Navjot
 # Name
-#   view all renter transactions
+#   view all renter transactions, is a subsection of the profile funtionality. 
 #
 # GET
-#   http://127.0.0.1:5000/destination
-#   Gets the user info from...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile/renter/transactions/all
+#   Gets the user info from who the currently authenticated user in the system is
 # POST
-#   http://127.0.0.1:5000/destination
-#   Posts the info to ...:
-#       - thing one
-#       - thing two
+#   http://127.0.0.1:5000/profile/renter/transactions/all
+#   Posts the info to update the RENTAL table if the user chooses to do a RATING
+#   Posts the info to update the RENTAL table if the user chooses to do a review
+#   
 @app.route('/profile/renter/transactions/all', methods = ['GET', 'POST'])
 @login_required
 def renterTransactions():
@@ -354,9 +342,10 @@ def ownerTransactions():
 
     elif request.method == 'POST':
         # updates a pending rental to booked, or a booked rental to complete
-        if pending and request.form['approveBtn'] is not None:
+        type = request.args.get('t')
+        if pending and type == '1'  and request.form['approveBtn'] is not None:
             cur.execute('UPDATE RENTAL SET Type=? WHERE tID=?',('booked',request.form['approveBtn']))
-        elif booked and request.form['completeBtn'] is not None:
+        elif booked and type == '0' and request.form['completeBtn'] is not None:
             cur.execute('UPDATE RENTAL SET Type=? WHERE tID=?',('complete',request.form['completeBtn']))
         db.commit()
         cur.close()
@@ -383,20 +372,25 @@ def ownerTransactions():
 def ownerItems():
     db = get_db()
     cur = db.cursor()
-    all_items = cur.execute('SELECT * FROM ITEM WHERE Owner_email=?', (g.user['Email'],)).fetchall()
-    blackouts = cur.execute('SELECT * FROM ITEM_BLACKOUT WHERE Owner_email=?', (g.user['Email'],)).fetchall()
+    blackout_dict = {} #empty dictionary
+    all_items = cur.execute('SELECT * FROM ITEM WHERE Owner_email=?', (g.user['Email'],)).fetchall() #gets all items that the current user owns
+    for item in all_items:
+        blackout_dict[item[0]] = "None"
+
+    blackouts = cur.execute('SELECT * FROM ITEM_BLACKOUT WHERE Owner_email=?', (g.user['Email'],)).fetchall() #gets all blackouts that the current user has set
+    for b in blackouts:
+        for i in all_items:
+            if i[0] == b[0]:
+                blackout_dict[i[0]] = b[2] + " to " + b[3]
+
     if request.method == 'GET':
-        if blackouts:
-            return render_template('items.html', items=all_items, blackouts=blackouts, zip=zip)
-        else:
-            return render_template('items.html', items=all_items)
+        return render_template('items.html', items=all_items, blackouts=blackout_dict)
     elif request.method == 'POST':
         type = request.args.get('t')
         if type == '1' and request.form['deleteBtn'] is not None :
             cur.execute('DELETE FROM ITEM WHERE Title=? AND Owner_email=?',(request.form['deleteBtn'], g.user['Email']))
         elif type == '0' and request.form['blackoutBtn'] is not None :
             cur.execute('INSERT INTO ITEM_BLACKOUT (Title, Owner_email, Start_date, End_date) VALUES (?,?,?,?)',(request.form['blackoutBtn'],g.user['Email'],request.form['start'],request.form['end']))
-            temp = cur.execute('SELECT * FROM ITEM_BLACKOUT WHERE Owner_email=?', (g.user['Email'],)).fetchall()
 
         db.commit()
         cur.close()
@@ -433,7 +427,7 @@ def editItem():
             cat = item[1]
         else:
             cat = form.category.data
-        cur.execute('UPDATE ITEM SET Title=?, Category_name=?, Description=?, Daily_rate=? WHERE Owner_email=?',(form.title.data, cat, form.description.data, form.daily_rate.data, g.user['Email'],))
+        cur.execute('UPDATE ITEM SET Title=?, Category_name=?, Description=?, Daily_rate=? WHERE Title=?',(form.title.data, cat, form.description.data, form.daily_rate.data, itemName,))
         db.commit()
         cur.close()
         return redirect(url_for('ownerItems'))
