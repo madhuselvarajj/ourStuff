@@ -462,7 +462,6 @@ def postItem():
     form = PostItemForm()
     db = get_db()
     cur = db.cursor()
-
     if request.method == 'POST':
         print(form.daily_rate.data)
         if form.validate_on_submit():    
@@ -481,27 +480,24 @@ def postItem():
                 return redirect(url_for('ownerItems'))
             except sqlite3.IntegrityError:
                 flash('Item title already in use!', 'warning')
-            
     
+    # Get all categories
     categories = cur.execute(
         'SELECT * FROM CATEGORY'
     ).fetchall()
-
+    # Convert categories with parents to a string of format "Parent < Name"
     ctgr = []
-
     for c in categories:
         if c[1] == None:
             ctgr.append(c[0])
         else:
             val = c[1] + ' < ' + c[0]
             ctgr.append(val)
-
+    # sort alphabetically
     ctgr.sort()
-
+    # set form's Select Field choices
     form.category.choices = [c for c in ctgr] # category
     form.category.data = ctgr[0]
-
-
     return render_template('postItem.html', form=form)
 
 
