@@ -16,7 +16,6 @@ app.config['SECRET_KEY'] = 'a722544382860619226245081983ab8f' #needed to use fla
 app.register_blueprint(auth.bp)
 app.register_blueprint(admin.bp)
 
-# Navjot
 # Home
 #   The home page is the default page that OurStuff will use to allow users to browse all general
 #   functionalities which are offered by the website
@@ -30,7 +29,6 @@ def home():
     return render_template('home.html')
 
 # view all items
-# Navjot
 # Name
 #  Allows users to browse all items which are currently available for them to browse from in order to
 #   rent. Displays items that have been posted by other users
@@ -80,7 +78,6 @@ def view_all():
     return render_template('browse.html', data=data, form=form) #show the data in the html
 
 # user requests to rent item
-# Navjot
 # Name
 #   This will allow a user to fill out the needed information in order to rent a new item
 #   Hence, they will create a rental request to be laster approved by the owner of the item.
@@ -122,7 +119,6 @@ def rent_item(title):
     return render_template('rentItem.html', title=title, form=form) #render the home page again or a confirmation page
 
 
-# Navjot
 # Name
 #   view profile (where user can view their transactions and items)
 #
@@ -224,7 +220,6 @@ def determineDaysRemaining(booked):
         days_remaining.append(remaining)
     return days_remaining
 
-# Navjot
 # Name
 #   view all renter transactions, is a subsection of the profile funtionality.
 #
