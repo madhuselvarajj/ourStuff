@@ -43,8 +43,8 @@ class FilterForm(FlaskForm):
 class RentalRequestForm(FlaskForm):
     startDate = DateField('starting date', validators=[DataRequired()])
     duration = IntegerField('duration', validators=[DataRequired()])
-    pickup = DateField('pick up date', validators=[DataRequired()])
-    dropoff = DateField('drop off date', validators=[DataRequired()])
+    pickup = StringField('pick up time format hh:mm', validators=[DataRequired()])
+    dropoff = StringField('drop off time format hh:mm', validators=[DataRequired()])
     submit = SubmitField('Request this rental')
 
 class ReportForm(FlaskForm):
