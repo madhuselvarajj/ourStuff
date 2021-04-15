@@ -1,23 +1,3 @@
--- SQL Script:
---      Declare "Our Stuff" Relational Database
-
-/*
-USER:
-    NAME            FORMAT          TYPE        VALIDATION?
-    -------------------------------------------------------
-    Email:          "*@*.*"         TEXT        yes
-    Password:       "________%"     TEXT        yes
-    First_name:     "*"             TEXT        no
-    Last_name:      "*"             TEXT        no
-    DoB:            "YYYY-MM-DD"    TEXT        yes
-    Owner:          -removed
-    Renter:         -removed
-    Street_address: "*"             TEXT        no
-    City:           "*"             TEXT        no
-    Province:       "aa"            TEXT        yes
-    Postal_code     "a#a #a#"       TEXT        yes
-    =======================================================
-*/
 CREATE TABLE USER
 (
     Email			TEXT		PRIMARY KEY,
