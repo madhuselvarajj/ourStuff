@@ -49,7 +49,8 @@ def view_all():
     db = get_db()
     cur = db.cursor()
 
-    # TODO: remove default none parameter. may be able to condense to a single sql statement?
+    #multiple if statements for different cases of filtration. ex. 2 categories together, only filter by category etc. 
+    #depending on what case of filtration is needed, we will execute a different query on the database. 
     if request.method == 'POST' and form.validate_on_submit():
         if (form.category.data != 'none' and form.city.data != 'none' and form.maxPrice.data != 'none'):
             cur.execute("SELECT * FROM ITEM, USER WHERE USER.Email = ITEM.Owner_email AND Category_name=? AND Daily_rate<=? AND USER.City =?", (form.category.data, form.maxPrice.data, form.city.data))
