@@ -312,6 +312,7 @@ def report(ownerEmail):
         db = get_db()
         cur = db.cursor()
         cur.execute("INSERT INTO REPORT (User_email, Reported_user_email, Admin_ID, Offense_description, Date_of_offense, Date_of_report) VALUES (?,?,?,?,?,?)", (g.user['Email'], ownerEmail, None, description, date, todaysDate))
+        db.commit()
         return redirect(url_for('renterTransactions'))
 
 # View Transaction History of Owned Items
