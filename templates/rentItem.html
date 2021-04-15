@@ -10,20 +10,20 @@
               <div class="form-row">
                 <div class="form-group col-md-6">
                   <label>Start Date</label>
-                  {{ form.startDate(class="form-control form-control-md", placeholder="start date") }}
+                  {{ form.startDate(class="form-control form-control-md", placeholder="yyyy-mm-dd") }}
                 </div>
                 <div class="form-group col-md-6">
-                  <label>duration of rental</label>
-                  {{ form.duration(class="form-control form-control-md", placeholder="duration") }}
+                  <label>Duration of rental</label>
+                  {{ form.duration(class="form-control form-control-md", placeholder="number of days") }}
                 </div>
               </div>
               <div class="form-group">
                 {{ form.pickup.label(class="form-control-label") }}
-                {{ form.pickup(class="form-control form-control-md", placeholder="pickup date") }}
+                {{ form.pickup(class="form-control form-control-md", placeholder="hh:mm") }}
               </div>
               <div class="form-group">
                 {{ form.dropoff.label(class="form-control-label") }}
-                {{ form.dropoff(class="form-control form-control-md", placeholder="dropoff date") }}
+                {{ form.dropoff(class="form-control form-control-md", placeholder="hh:mm") }}
               </div>
               <div class="form-group">
               {{ form.submit(class="btn btn-outline-info") }}

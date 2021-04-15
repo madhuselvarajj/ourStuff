@@ -49,8 +49,8 @@ def view_all():
     db = get_db()
     cur = db.cursor()
 
-    #multiple if statements for different cases of filtration. ex. 2 categories together, only filter by category etc. 
-    #depending on what case of filtration is needed, we will execute a different query on the database. 
+    #multiple if statements for different cases of filtration. ex. 2 categories together, only filter by category etc.
+    #depending on what case of filtration is needed, we will execute a different query on the database.
     if request.method == 'POST' and form.validate_on_submit():
         if (form.category.data != 'none' and form.city.data != 'none' and form.maxPrice.data != 'none'):
             cur.execute("SELECT * FROM ITEM, USER WHERE USER.Email = ITEM.Owner_email AND Category_name=? AND Daily_rate<=? AND USER.City =?", (form.category.data, form.maxPrice.data, form.city.data))
@@ -216,9 +216,12 @@ def determineDaysRemaining(booked):
     for r in booked:
         start = datetime.strptime(r[4], '%Y-%m-%d')
         today = datetime.now()
-        diff = today - start
-        remaining = r[5] - diff.days
-        days_remaining.append(remaining)
+        if today<start:
+            days_remaining.append("Not yet started")
+        else:
+            diff = today - start
+            remaining = r[5] - diff.days
+            days_remaining.append(str(remaining) + " days")
     return days_remaining
 
 # Name
@@ -264,6 +267,7 @@ def renterTransactions():
 
     elif request.method == 'POST':# updates either the Rating or Review attribute for a completed RENTAL
         rate = request.args.get('rate') # used to determine if the rating or review button was pressed
+        print(request.form['ratingBtn'])
         if complete and rate == '1' and request.form['ratingBtn'] is not None:
             cur.execute('UPDATE RENTAL SET Rating=? WHERE tID=?',(int(request.form['rating']),request.form['ratingBtn']))
         elif complete and rate == '0' and request.form['reviewBtn'] is not None:
