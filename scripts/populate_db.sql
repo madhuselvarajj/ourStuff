@@ -33,7 +33,10 @@ INSERT INTO ITEM VALUES
 	("Shogun, James Clavell", "Historical Fiction", "stephanedorotich@gmail.com", "My favorite book", 1.5),
 	("Acoustic Solutions ASG-150", "Music Equipment", "stephanedorotich@gmail.com", "A great portable PA with 4 channels", 30.0),
 	("Book Title", "Books", "madhuselvaraj24@gmail.com", "nice book", 30.0),
-	("Fundamentals of Database Systems, Elmasri and Navathe", "Non-fiction", "stephanedorotich@gmail.com", "CPSC 471 textbook", 2.0);
+	("Fundamentals of Database Systems, Elmasri and Navathe", "Non-fiction", "stephanedorotich@gmail.com", "CPSC 471 textbook", 2.0),
+	("The Great Gatsby", "Books", "stephanedorotich@gmail.com", "An incredible novel", 0.5),
+	("Yamaha Guitar", "Instruments", "navjotsk99@gmail.com", "My favourite guitar, in perfect condition", 3.0),
+	("Selmer Clarinet", "Instruments", "navjotsk99@gmail.com", "Has some minor damage to the body of the instrument", 2.0);
 
 INSERT INTO ITEM_BLACKOUT VALUES
 	("Shogun, James Clavell", "stephanedorotich@gmail.com", "2021-03-01", "2021-03-31");
