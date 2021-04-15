@@ -56,10 +56,10 @@
                             <td>{{blackouts[row[0]]}}</td>
                           {% endif %}
                           <td> <!--Edit button-->
-                            <button type="button" class="btn btn-outline-info btn-sm float-right " onclick="window.location.href='{{url_for('editItem', item=row[0])}}'">Edit</button>
+                            <button type="button" class="btn btn-outline-info btn-sm float-right " onclick="window.location" href="{{url_for('editItem', item=row[0])}}">Edit</button>
                           </td>
                           <td> <!--delete button-->
-                            <form method="POST" action="{{ url_for('ownerItems', t=2)}}">
+                            <form method="POST" action="{{ url_for('ownerItems', t=1)}}">
                               <button name="deleteBtn" type="submit" class="btn btn-outline-info btn-sm btn float-left" value="{{row[0]}}">Delete</button>
                             </form>
                           </td>

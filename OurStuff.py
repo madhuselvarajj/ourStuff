@@ -143,7 +143,9 @@ def profile():
     num_renter_rentals = cur.fetchone()[0]
     all_items = cur.execute('SELECT COUNT (*) FROM ITEM WHERE Owner_email=?', (g.user['Email'],))
     num_items = cur.fetchone()[0]
-    categories = cur.execute('SELECT Name FROM CATEGORY').fetchall()
+    categories = cur.execute(
+        'SELECT Name FROM CATEGORY EXCEPT SELECT Category_name FROM INTERESTED_IN WHERE User_email=? ORDER BY Category_name ASC', (g.user['Email'],)
+        ).fetchall()
     interests = cur.execute('SELECT * FROM INTERESTED_IN WHERE User_email=?', (g.user['Email'],)).fetchall()
     all_interests = ""
 
@@ -266,8 +268,7 @@ def renterTransactions():
             return render_template('renterTransactions.html')
 
     elif request.method == 'POST':# updates either the Rating or Review attribute for a completed RENTAL
-        rate = request.args.get('rate') # used to determine if the rating or review button was pressed
-        print(request.form['ratingBtn'])
+        rate = request.args.get('rate') # used to determine if the rating or review button was pressed2     
         if complete and rate == '1' and request.form['ratingBtn'] is not None:
             cur.execute('UPDATE RENTAL SET Rating=? WHERE tID=?',(int(request.form['rating']),request.form['ratingBtn']))
         elif complete and rate == '0' and request.form['reviewBtn'] is not None:
@@ -412,7 +413,7 @@ def ownerItems():
         return render_template('items.html', items=all_items, blackouts=blackout_dict)
     elif request.method == 'POST':
         type = request.args.get('t') # type determines if delete or add blackout button was pressed
-        if type == '1' and request.form['deleteBtn'] is not None :
+        if type == '1' and request.form['deleteBtn'] is not None:
             cur.execute('DELETE FROM ITEM WHERE Title=? AND Owner_email=?',(request.form['deleteBtn'], g.user['Email']))
         elif type == '0' and request.form['blackoutBtn'] is not None :
             cur.execute('INSERT INTO ITEM_BLACKOUT (Title, Owner_email, Start_date, End_date) VALUES (?,?,?,?)',(request.form['blackoutBtn'],g.user['Email'],request.form['start'],request.form['end']))
