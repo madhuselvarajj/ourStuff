@@ -458,9 +458,9 @@ def blackout(itemname):
 @login_required
 def editItem():
     form = EditItemForm()
-    itemName = request.args.get('item') # specific item that the user desires to edit
     db = get_db()
     cur = db.cursor()
+    itemName = request.args.get('item')
 
     item = cur.execute('SELECT * FROM ITEM WHERE Title=? AND Owner_email=?', (itemName, g.user['Email'],)).fetchone() # gets the item that the user desires to edit
     categories = cur.execute('SELECT Name FROM CATEGORY').fetchall() # gets all the categories

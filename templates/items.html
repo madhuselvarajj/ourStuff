@@ -36,7 +36,7 @@
                           {% endif %}
 
                           <td> <!--Edit button-->
-                            <button type="button" class="btn btn-outline-info btn-sm float-right " onclick="window.location" href="{{url_for('editItem', item={{row[0]}})}}">Edit</button>
+                            <a href="{{url_for('editItem', item=row[0])}}" class="btn btn-outline-info btn-sm btn float-left">edit</a>
                           </td>
                           <td> <!--delete button-->
                             <form method="POST" action="{{ url_for('ownerItems', t=1)}}">
