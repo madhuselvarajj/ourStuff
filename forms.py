@@ -65,3 +65,8 @@ class PostItemForm(FlaskForm):
     description = TextAreaField(validators=[DataRequired()])
     daily_rate = FloatField(validators=[DataRequired()])
     submit = SubmitField('Post for Rent')
+
+class blackoutForm(FlaskForm):
+    start = StringField(validators=[DataRequired()])
+    end = StringField(validators=[DataRequired()])
+    submit = SubmitField('add blackout dates')

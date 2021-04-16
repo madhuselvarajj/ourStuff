@@ -1,7 +1,7 @@
 import sqlite3, flask
 from flask import render_template, redirect, url_for, request, flash, g
 from forms import (
-    EditItemForm, FilterForm, LoginForm, PostItemForm, RentalRequestForm, ReportForm, UserInfoForm
+    EditItemForm, FilterForm, LoginForm, PostItemForm, RentalRequestForm, ReportForm, UserInfoForm, blackoutForm
 )
 from datetime import datetime, timedelta, date
 import auth
@@ -401,6 +401,7 @@ def ownerItems():
     cur = db.cursor()
     blackout_dict = {} #empty dictionary
     all_items = cur.execute('SELECT * FROM ITEM WHERE Owner_email=?', (g.user['Email'],)).fetchall() #gets all items that the current user owns
+    db.commit()
     for item in all_items:
         blackout_dict[item[0]] = "None"
 
@@ -413,15 +414,28 @@ def ownerItems():
     if request.method == 'GET':
         return render_template('items.html', items=all_items, blackouts=blackout_dict)
     elif request.method == 'POST':
-        type = request.args.get('t') # type determines if delete or add blackout button was pressed
-        if type == '1' and request.form['deleteBtn'] is not None:
-            cur.execute('DELETE FROM ITEM WHERE Title=? AND Owner_email=?',(request.form['deleteBtn'], g.user['Email']))
-        elif type == '0' and request.form['blackoutBtn'] is not None :
-            cur.execute('INSERT INTO ITEM_BLACKOUT (Title, Owner_email, Start_date, End_date) VALUES (?,?,?,?)',(request.form['blackoutBtn'],g.user['Email'],request.form['start'],request.form['end']))
+        #type = request.args.get('t') # type determines if delete or add blackout button was pressed
+        #if type == '1' and request.form['deleteBtn'] is not None:
+            
+            #cur.execute('DELETE FROM ITEM WHERE Title=? AND Owner_email=?',(request.form['deleteBtn'], g.user['Email']))
+        #elif type == '0' and request.form['blackoutBtn'] is not None :
+            #cur.execute('INSERT INTO ITEM_BLACKOUT (Title, Owner_email, Start_date, End_date) VALUES (?,?,?,?)',(request.form['blackoutBtn'],g.user['Email'],request.form['start'],request.form['end']))
 
-        db.commit()
-        cur.close()
+        #db.commit()
+        #cur.close()
         return redirect(url_for('ownerItems'))
+
+@app.route('/profile/items/blackout/<itemname>', methods = ['GET', 'POST'])
+@login_required
+def blackout(itemname):
+    form = blackoutForm()
+    if request.method == 'GET':
+        return render_template('blackout.html', item=itemname, form=form)
+    db = get_db()
+    cur = db.cursor()
+    cur.execute('INSERT INTO ITEM_BLACKOUT (Title, Owner_email, Start_date, End_date) VALUES (?,?,?,?)',(itemname, g.user['Email'], form.start.data, form.end.data))
+    db.commit()
+    return redirect(url_for('ownerItems'))
 
 # Edit an item
 #   Allows users to edit the information for an item they have posted

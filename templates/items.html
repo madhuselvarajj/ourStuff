@@ -26,37 +26,17 @@
                           <td>{{row[3]}} </td> <!--Description-->
                           <td>{{row[4]}}</td> <!--Daily Rate-->
                           {% if blackouts[row[0]] == "None"%} <!--Blackout dates or blackout button-->
-                            <td>
-                              <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target="#blackoutModal{{row[0]}}">Add Blackout Dates</button> <!--modal button-->
-                              <div class="modal fade" id="blackoutModal{{row[0]}}" tabindex="-1" role="dialog" aria-labelledby="blackoutModal">
-                                 <div class="modal-dialog modal-dialog-centered" role="document">
-                                   <div class="modal-content">
-                                     <div class="modal-header">
-                                       <h5 class="modal-title" id="blackoutModal">Enter start and end dates</h5>
-                                       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                         <span aria-hidden="true">&times;</span>
-                                       </button>
-                                     </div>
-                                     <div class="modal-body">
-                                       <form method="POST" action="{{ url_for('ownerItems', t=0)}}">
-                                           <div class="form-group">
-                                             <label for="startDate">Start Date</label>
-                                             <input class="form-control" id="startDate" placeholder="YYYY-MM-DD" name="start">
-                                             <label for="endDate">End Date</label>
-                                             <input  class="form-control" id="endDate" placeholder="YYYY-MM-DD" name= "end">
-                                             <button type="submit" class="btn btn-outline-primary float-right modal-button" name="blackoutBtn" value="{{row[0]}}">Save</button>
-                                           </div>
-                                       </form>
-                                     </div><!--end of modal body-->
-                                   </div><!--end of modal content-->
-                                 </div>
-                               </div> <!--end of entire modal-->
-                            </td>
+                    <!-- Trigger the modal with a button -->
+                          <td>
+                            <a href="/profile/items/blackout/{{row[0]}}" class="btn btn-outline-info btn-sm btn float-left">blackout this item</a>
+                          </td>
+                    
                           {% else %}
                             <td>{{blackouts[row[0]]}}</td>
                           {% endif %}
+
                           <td> <!--Edit button-->
-                            <button type="button" class="btn btn-outline-info btn-sm float-right " onclick="window.location" href="{{url_for('editItem', item=row[0])}}">Edit</button>
+                            <button type="button" class="btn btn-outline-info btn-sm float-right " onclick="window.location" href="{{url_for('editItem', item={{row[0]}})}}">Edit</button>
                           </td>
                           <td> <!--delete button-->
                             <form method="POST" action="{{ url_for('ownerItems', t=1)}}">
