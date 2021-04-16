@@ -414,17 +414,31 @@ def ownerItems():
     if request.method == 'GET':
         return render_template('items.html', items=all_items, blackouts=blackout_dict)
     elif request.method == 'POST':
-        #type = request.args.get('t') # type determines if delete or add blackout button was pressed
-        #if type == '1' and request.form['deleteBtn'] is not None:
+        thetype = request.args.get('t') # type determines if delete or add blackout button was pressed
+        if thetype == '1' and request.form['deleteBtn'] is not None:
             
-            #cur.execute('DELETE FROM ITEM WHERE Title=? AND Owner_email=?',(request.form['deleteBtn'], g.user['Email']))
+            cur.execute('DELETE FROM ITEM WHERE Title=? AND Owner_email=?',(request.form['deleteBtn'], g.user['Email']))
         #elif type == '0' and request.form['blackoutBtn'] is not None :
             #cur.execute('INSERT INTO ITEM_BLACKOUT (Title, Owner_email, Start_date, End_date) VALUES (?,?,?,?)',(request.form['blackoutBtn'],g.user['Email'],request.form['start'],request.form['end']))
 
-        #db.commit()
-        #cur.close()
+        db.commit()
+        cur.close()
         return redirect(url_for('ownerItems'))
 
+# Blackout an item
+#   Allows users to set dates where an item is not to be rented
+#
+# GET
+#   http://127.0.0.1:5000/profile/items/blackout/<itemname>
+#
+# POST
+#   http://127.0.0.1:5000/profile/items/blackout/<itemname>
+#   Updates ITEM using the values from the edit item form:
+#         (
+#           start,
+#           end,
+#         )
+#   Once updated, redirects to ownerItems page
 @app.route('/profile/items/blackout/<itemname>', methods = ['GET', 'POST'])
 @login_required
 def blackout(itemname):
