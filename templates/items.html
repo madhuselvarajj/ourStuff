@@ -27,8 +27,8 @@
                           <td>{{row[4]}}</td> <!--Daily Rate-->
                           {% if blackouts[row[0]] == "None"%} <!--Blackout dates or blackout button-->
                             <td>
-                              <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target="#blackoutModal">Add Blackout Dates</button> <!--modal button-->
-                               <div class="modal fade" id="blackoutModal" tabindex="-1" role="dialog" aria-labelledby="blackoutModal" aria-hidden="true">
+                              <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target="#blackoutModal{{row[0]}}">Add Blackout Dates</button> <!--modal button-->
+                              <div class="modal fade" id="blackoutModal{{row[0]}}" tabindex="-1" role="dialog" aria-labelledby="blackoutModal">
                                  <div class="modal-dialog modal-dialog-centered" role="document">
                                    <div class="modal-content">
                                      <div class="modal-header">
