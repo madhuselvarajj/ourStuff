@@ -92,8 +92,8 @@
                           <td id="rating">{{row[9]}}</td>
                         {% else %}
                           <td>
-                            <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target="#rateModal">Rate</button>
-                            <div class="modal fade" id="rateModal" tabindex="-1" role="dialog" aria-labelledby="rateModalTitle" aria-hidden="true">
+                            <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target="#rateModal{{row[0]}}">Rate</button>
+                            <div class="modal fade" id="rateModal{{row[0]}}" tabindex="-1" role="dialog" aria-labelledby="rateModalTitle" aria-hidden="true">
                               <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                   <div class="modal-header">
@@ -103,7 +103,7 @@
                                     </button>
                                   </div>
                                   <div class="modal-body">
-                                    <form method="POST" action="{{ url_for('renterTransactions', rate=1)}}">
+                                    <form method="POST" action="{{ url_for('renterTransactions', rate=1, itemid=row[0])}}">
                                         <div class="form-group">
                                           <div class="input-group">
                                             <select class="form-control" id="ratingSelect" name="rating">
@@ -130,8 +130,8 @@
                           <td>{{row[10]}}</td>
                         {% else %}
                           <td>
-                            <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target="#reviewModal">Review</button>
-                            <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalTitle" aria-hidden="true">
+                            <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target="#reviewModal{{row[0]}}">Review</button>
+                            <div class="modal fade" id="reviewModal{{row[0]}}" tabindex="-1" role="dialog" aria-labelledby="reviewModalTitle" aria-hidden="true">
                               <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                   <div class="modal-header">
@@ -141,7 +141,7 @@
                                     </button>
                                   </div>
                                   <div class="modal-body">
-                                    <form method="POST" action="{{ url_for('renterTransactions', rate=0)}}">
+                                    <form method="POST" action="{{ url_for('renterTransactions', rate=0, itemid=row[0])}}">
                                         <label for="message-text" class="col-form-label">Write your review:</label>
                                         <textarea class="form-control" id="message-text" name="review"></textarea>
                                         <button type="submit" class="btn btn-outline-primary float-right modal-button" name="reviewBtn" value="{{row[0]}}">Save</button>

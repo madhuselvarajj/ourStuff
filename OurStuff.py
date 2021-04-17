@@ -268,11 +268,12 @@ def renterTransactions():
             return render_template('renterTransactions.html')
 
     elif request.method == 'POST':# updates either the Rating or Review attribute for a completed RENTAL
-        rate = request.args.get('rate') # used to determine if the rating or review button was pressed2     
+        rate = request.args.get('rate') # used to determine if the rating or review button was pressed2   
+        itemid = request.args.get('itemid')  
         if complete and rate == '1' and request.form['ratingBtn'] is not None:
-            cur.execute('UPDATE RENTAL SET Rating=? WHERE tID=?',(int(request.form['rating']),request.form['ratingBtn']))
+            cur.execute('UPDATE RENTAL SET Rating=? WHERE tID=?',(int(request.form['rating']),request.args.get('itemid')))
         elif complete and rate == '0' and request.form['reviewBtn'] is not None:
-            cur.execute('UPDATE RENTAL SET Review=? WHERE tID=?',(request.form['review'],request.form['reviewBtn']))
+            cur.execute('UPDATE RENTAL SET Review=? WHERE tID=?',(request.form['review'],request.args.get('itemid')))
 
         db.commit()
         cur.close()
@@ -418,8 +419,6 @@ def ownerItems():
         if thetype == '1' and request.form['deleteBtn'] is not None:
             
             cur.execute('DELETE FROM ITEM WHERE Title=? AND Owner_email=?',(request.form['deleteBtn'], g.user['Email']))
-        #elif type == '0' and request.form['blackoutBtn'] is not None :
-            #cur.execute('INSERT INTO ITEM_BLACKOUT (Title, Owner_email, Start_date, End_date) VALUES (?,?,?,?)',(request.form['blackoutBtn'],g.user['Email'],request.form['start'],request.form['end']))
 
         db.commit()
         cur.close()
