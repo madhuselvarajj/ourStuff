@@ -4,26 +4,28 @@
 
 This is the executive summary of our project.
 
-
 ## Getting started
 
   Please begin by cloning this repository. You can download it as a Zip file from https://github.com/stephanedorotich/ourStuff or you can use the following command:
   ```
   git clone https://github.com/stephanedorotich/ourStuff.git
   ```
-  You will need Python v3.0 or above and PIP (a package manager for Python). Python is necessary to run our project and PIP will be used to install the project's dependencies.  
 
-### Getting Python3
-
+### Python3 and Pip
+<details>
+  
   Check your current version of Python and Pip by executing the following using your Command Prompt or Terminal
   ```
   python --version
   pip --version
   ```
-  If you do not have Python v3.0 or above, please install it. [This guide](https://realpython.com/installing-python/) will help with installation. Pip is a package manager bundled with Python. If it is not installed, [this guide](https://pip.pypa.io/en/stable/installing/) will help with installation.
+  If you do not have Python v3.0 or above, please install it. [This guide](https://realpython.com/installing-python/) will help with installation. Pip is a package manager bundled with Python, if it is not installed, [this guide](https://pip.pypa.io/en/stable/installing/) will help with installation.
+  
+</details>
 
 ### Project Dependencies
-
+<details>
+  
   To install project dependencies, please run the following command
   
   If using Command Prompt:
@@ -35,6 +37,8 @@ This is the executive summary of our project.
   ```
   python -m pip install e .
   ```
+  
+</details>
 
 ### Running the Webapp
 
@@ -52,14 +56,12 @@ The IP address should look like this: ```http://127.0.0.1/5000/```. Have fun usi
 <details>
   <summary>Folders</summary>
 
-#### Scripts
-The scripts folder contains scripts for creating and restoring our database
+Folder | Description
+----- | -----
+scripts | The scripts folder contains scripts for creating and restoring our database
+static | The static folder contains our webapp's static css stylesheet
+templates | The templates folder our webapp's html documents
 
-#### Static
-The static folder contains our webapp's static css stylesheet
-
-#### Templates
-The templates folder our webapp's html documents
 </details>
 
 <details>
@@ -67,13 +69,13 @@ The templates folder our webapp's html documents
   
 Filename | Description
 ----- | -----
-admin.py | API for Admin functionality
+admin.py | API for admin
 auth.py | API for authenticating users
 db.py | for opening and closing connection to our db
 forms.py | WTForm definitions
-ourStuff.db | Our SQLite3 database file
+ourStuff.db | SQLite3 database file
 OurStuff.py | API
-setup.py | Python script to make project "pip installable"
+setup.py | for making the project "pip installable"
 </details>
 
 ## Developer tools
@@ -86,10 +88,8 @@ To reset the database to its default state, execute
 ```
 python3 scripts/reset.py
 ```
-This will recreate the database and populate it using 'scripts/populate_db.sql'
 
 To update the default state to the current state, execute
 ```
 python3 scripts/save.py
 ```
-This will save the current database state to 'scripts/populate_db.sql'
