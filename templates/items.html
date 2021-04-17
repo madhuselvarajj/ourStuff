@@ -28,15 +28,15 @@
                           {% if blackouts[row[0]] == "None"%} <!--Blackout dates or blackout button-->
                     <!-- Trigger the modal with a button -->
                           <td>
-                            <a href="/profile/items/blackout/{{row[0]}}" class="btn btn-outline-info btn-sm btn float-left">blackout this item</a>
+                            <a href="/profile/items/blackout/{{row[0]}}" class="btn btn-outline-info btn-sm btn float-left">Blackout this item</a>
                           </td>
-                    
+
                           {% else %}
                             <td>{{blackouts[row[0]]}}</td>
                           {% endif %}
 
                           <td> <!--Edit button-->
-                            <a href="{{url_for('editItem', item=row[0])}}" class="btn btn-outline-info btn-sm btn float-left">edit</a>
+                            <a href="{{url_for('editItem', item=row[0])}}" class="btn btn-outline-info btn-sm btn float-left">Edit</a>
                           </td>
                           <td> <!--delete button-->
                             <form method="POST" action="{{ url_for('ownerItems', t=1)}}">
